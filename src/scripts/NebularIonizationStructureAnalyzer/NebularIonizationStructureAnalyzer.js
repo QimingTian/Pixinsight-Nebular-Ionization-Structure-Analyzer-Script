@@ -116,38 +116,41 @@ function NISADialog() {
    title.font = new Font(title.font.family, title.font.pointSize + 2);
    layout.add(title);
 
-   // 文件输入：分成两行
-   var fileRow1 = new Sizer;
-   fileRow1.spacing = 8;
-   fileRow1.add(createFileRow("Hα", this.haEdit, this.haButton), 100);
-   fileRow1.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton), 100);
-   layout.add(fileRow1);
+   // 使用 GroupBox 分组来强制布局
+   var fileGroup = new GroupBox(this);
+   fileGroup.title = "输入文件";
+   var fileGroupSizer = new Sizer;
+   fileGroupSizer.margin = 6;
+   fileGroupSizer.spacing = 6;
+   fileGroupSizer.add(createFileRow("Hα", this.haEdit, this.haButton));
+   fileGroupSizer.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
+   fileGroupSizer.add(createFileRow("SII", this.siiEdit, this.siiButton));
+   fileGroupSizer.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
+   fileGroup.sizer = fileGroupSizer;
+   layout.add(fileGroup);
 
-   var fileRow2 = new Sizer;
-   fileRow2.spacing = 8;
-   fileRow2.add(createFileRow("SII", this.siiEdit, this.siiButton), 100);
-   fileRow2.add(createFileRow("输出目录", this.outputEdit, this.outputButton), 100);
-   layout.add(fileRow2);
-
-   // 阈值参数：放在同一行
-   var paramsRow = new Sizer;
-   paramsRow.spacing = 12;
+   var paramsGroup = new GroupBox(this);
+   paramsGroup.title = "分析参数";
+   var paramsGroupSizer = new Sizer;
+   paramsGroupSizer.margin = 6;
+   paramsGroupSizer.spacing = 6;
    var shockRow = new Sizer;
    shockRow.spacing = 4;
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
-   paramsRow.add(shockRow);
+   paramsGroupSizer.add(shockRow);
    var highIonRow = new Sizer;
    highIonRow.spacing = 4;
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
-   paramsRow.add(highIonRow);
+   paramsGroupSizer.add(highIonRow);
    var snRow = new Sizer;
    snRow.spacing = 4;
    snRow.add(this.snSpinLabel);
    snRow.add(this.snSpin);
-   paramsRow.add(snRow);
-   layout.add(paramsRow);
+   paramsGroupSizer.add(snRow);
+   paramsGroup.sizer = paramsGroupSizer;
+   layout.add(paramsGroup);
 
    // 底部：按钮和进度条
    var buttonRow = new Sizer;
