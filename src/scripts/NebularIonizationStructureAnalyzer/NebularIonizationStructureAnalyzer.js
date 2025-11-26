@@ -116,6 +116,10 @@ function NISADialog() {
    title.font = new Font(title.font.family, title.font.pointSize + 2);
    layout.add(title);
 
+   // 将两个 GroupBox 放在同一行
+   var groupsRow = new Sizer;
+   groupsRow.spacing = 12;
+
    // 使用 GroupBox 分组来强制布局
    var fileGroup = new GroupBox(this);
    fileGroup.title = "输入文件";
@@ -127,7 +131,7 @@ function NISADialog() {
    fileGroupSizer.add(createFileRow("SII", this.siiEdit, this.siiButton));
    fileGroupSizer.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
    fileGroup.sizer = fileGroupSizer;
-   layout.add(fileGroup);
+   groupsRow.add(fileGroup, 100);
 
    var paramsGroup = new GroupBox(this);
    paramsGroup.title = "分析参数";
@@ -150,7 +154,9 @@ function NISADialog() {
    snRow.add(this.snSpin);
    paramsGroupSizer.add(snRow);
    paramsGroup.sizer = paramsGroupSizer;
-   layout.add(paramsGroup);
+   groupsRow.add(paramsGroup, 100);
+
+   layout.add(groupsRow);
 
    // 底部：按钮和进度条
    var buttonRow = new Sizer;
