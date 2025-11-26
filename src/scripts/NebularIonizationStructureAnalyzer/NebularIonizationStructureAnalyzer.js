@@ -37,7 +37,6 @@ function NISADialog() {
    var self = this;
 
    this.haEdit = new Edit(this);
-   this.haEdit.setToolTip("Hα FITS 文件路径");
    this.haButton = new ToolButton(this);
    this.haButton.text = "...";
    this.haButton.onClick = function () {
@@ -86,7 +85,6 @@ function NISADialog() {
    this.snSpin.setValue(3.0);
 
    this.outputEdit = new Edit(this);
-   this.outputEdit.setToolTip("分析结果输出目录");
    this.outputButton = new ToolButton(this);
    this.outputButton.text = "...";
    this.outputButton.onClick = function () {
