@@ -66,22 +66,22 @@ function NISADialog() {
          self.siiEdit.text = dlg.fileName;
    };
 
-   this.shockSpin = new NumericEdit(this);
+   this.shockSpinLabel = new Label(this);
+   this.shockSpinLabel.text = "SII/Hα 阈值:";
+   this.shockSpin = new SpinBox(this);
    this.shockSpin.setRange(0, 5);
-   this.shockSpin.setPrecision(2);
-   this.shockSpin.label.text = "SII/Hα 阈值";
    this.shockSpin.setValue(0.5);
 
-   this.highIonSpin = new NumericEdit(this);
+   this.highIonSpinLabel = new Label(this);
+   this.highIonSpinLabel.text = "OIII/Hα 阈值:";
+   this.highIonSpin = new SpinBox(this);
    this.highIonSpin.setRange(0, 5);
-   this.highIonSpin.setPrecision(2);
-   this.highIonSpin.label.text = "OIII/Hα 阈值";
    this.highIonSpin.setValue(1.0);
 
-   this.snSpin = new NumericEdit(this);
+   this.snSpinLabel = new Label(this);
+   this.snSpinLabel.text = "S/N 阈值:";
+   this.snSpin = new SpinBox(this);
    this.snSpin.setRange(0, 50);
-   this.snSpin.setPrecision(1);
-   this.snSpin.label.text = "S/N 阈值";
    this.snSpin.setValue(3.0);
 
    this.outputEdit = new Edit(this);
@@ -121,9 +121,24 @@ function NISADialog() {
    layout.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
    layout.add(createFileRow("SII", this.siiEdit, this.siiButton));
 
-   layout.add(this.shockSpin);
-   layout.add(this.highIonSpin);
-   layout.add(this.snSpin);
+   var shockRow = new HorizontalSizer;
+   shockRow.spacing = 4;
+   shockRow.add(this.shockSpinLabel);
+   shockRow.add(this.shockSpin);
+   layout.add(shockRow);
+
+   var highIonRow = new HorizontalSizer;
+   highIonRow.spacing = 4;
+   highIonRow.add(this.highIonSpinLabel);
+   highIonRow.add(this.highIonSpin);
+   layout.add(highIonRow);
+
+   var snRow = new HorizontalSizer;
+   snRow.spacing = 4;
+   snRow.add(this.snSpinLabel);
+   snRow.add(this.snSpin);
+   layout.add(snRow);
+
    layout.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
 
    var buttonRow = new HorizontalSizer;
