@@ -116,11 +116,11 @@ function NISADialog() {
    title.font = new Font(title.font.family, title.font.pointSize + 2);
    layout.add(title);
 
-   // 两列布局：左侧文件输入，右侧参数
-   var mainRow = new Sizer;
-   mainRow.spacing = 12;
+   // 两列布局容器
+   var twoColContainer = new Sizer;
+   twoColContainer.spacing = 15;
 
-   // 左侧列：文件输入
+   // 左侧列：文件输入（垂直排列）
    var leftCol = new Sizer;
    leftCol.spacing = 6;
    leftCol.add(createFileRow("Hα", this.haEdit, this.haButton));
@@ -128,7 +128,7 @@ function NISADialog() {
    leftCol.add(createFileRow("SII", this.siiEdit, this.siiButton));
    leftCol.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
 
-   // 右侧列：阈值参数
+   // 右侧列：阈值参数（垂直排列）
    var rightCol = new Sizer;
    rightCol.spacing = 6;
    var shockRow = new Sizer;
@@ -147,9 +147,10 @@ function NISADialog() {
    snRow.add(this.snSpin);
    rightCol.add(snRow);
 
-   mainRow.add(leftCol);
-   mainRow.add(rightCol);
-   layout.add(mainRow);
+   // 将两列添加到水平容器
+   twoColContainer.add(leftCol, 100);
+   twoColContainer.add(rightCol, 100);
+   layout.add(twoColContainer);
 
    // 底部：按钮和进度条
    var buttonRow = new Sizer;
