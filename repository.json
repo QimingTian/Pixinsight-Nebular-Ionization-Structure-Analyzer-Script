@@ -3,7 +3,7 @@
   "description": "A collection of PixInsight scripts for scientific astro-image analysis.",
   "repository": [
     {
-      "url": "https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main",
+      "url": "https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main/",
       "scripts": [
         {
           "name": "NebularIonizationStructureAnalyzer",
