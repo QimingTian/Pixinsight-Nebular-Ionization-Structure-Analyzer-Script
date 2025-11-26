@@ -109,37 +109,49 @@ function NISADialog() {
    this.progressLabel.text = "等待执行...";
 
    var layout = new Sizer;
-   layout.margin = 6;
-   layout.spacing = 6;
+   layout.margin = 8;
+   layout.spacing = 8;
 
    var title = createLabel("Nebular Ionization Structure Analyzer");
    title.font = new Font(title.font.family, title.font.pointSize + 2);
    layout.add(title);
 
-   layout.add(createFileRow("Hα", this.haEdit, this.haButton));
-   layout.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
-   layout.add(createFileRow("SII", this.siiEdit, this.siiButton));
+   // 两列布局：左侧文件输入，右侧参数
+   var mainRow = new Sizer;
+   mainRow.spacing = 12;
 
+   // 左侧列：文件输入
+   var leftCol = new Sizer;
+   leftCol.spacing = 6;
+   leftCol.add(createFileRow("Hα", this.haEdit, this.haButton));
+   leftCol.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
+   leftCol.add(createFileRow("SII", this.siiEdit, this.siiButton));
+   leftCol.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
+
+   // 右侧列：阈值参数
+   var rightCol = new Sizer;
+   rightCol.spacing = 6;
    var shockRow = new Sizer;
    shockRow.spacing = 4;
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
-   layout.add(shockRow);
-
+   rightCol.add(shockRow);
    var highIonRow = new Sizer;
    highIonRow.spacing = 4;
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
-   layout.add(highIonRow);
-
+   rightCol.add(highIonRow);
    var snRow = new Sizer;
    snRow.spacing = 4;
    snRow.add(this.snSpinLabel);
    snRow.add(this.snSpin);
-   layout.add(snRow);
+   rightCol.add(snRow);
 
-   layout.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
+   mainRow.add(leftCol);
+   mainRow.add(rightCol);
+   layout.add(mainRow);
 
+   // 底部：按钮和进度条
    var buttonRow = new Sizer;
    buttonRow.spacing = 6;
    buttonRow.add(this.runButton);
