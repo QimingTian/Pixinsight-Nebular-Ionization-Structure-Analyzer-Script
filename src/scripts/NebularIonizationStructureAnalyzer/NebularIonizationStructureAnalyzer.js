@@ -70,19 +70,19 @@ function NISADialog() {
    this.shockSpinLabel.text = "SII/Hα 阈值:";
    this.shockSpin = new SpinBox(this);
    this.shockSpin.setRange(0, 5);
-   this.shockSpin.setValue(0.5);
+   this.shockSpin.value = 0.5;
 
    this.highIonSpinLabel = new Label(this);
    this.highIonSpinLabel.text = "OIII/Hα 阈值:";
    this.highIonSpin = new SpinBox(this);
    this.highIonSpin.setRange(0, 5);
-   this.highIonSpin.setValue(1.0);
+   this.highIonSpin.value = 1.0;
 
    this.snSpinLabel = new Label(this);
    this.snSpinLabel.text = "S/N 阈值:";
    this.snSpin = new SpinBox(this);
    this.snSpin.setRange(0, 50);
-   this.snSpin.setValue(3.0);
+   this.snSpin.value = 3.0;
 
    this.outputEdit = new Edit(this);
    this.outputButton = new ToolButton(this);
