@@ -1,0 +1,18 @@
+{
+  "title": "James PI Astro Tools",
+  "description": "A collection of PixInsight scripts for scientific astro-image analysis.",
+  "repository": [
+    {
+      "url": "https://raw.githubusercontent.com/tianqiming/nebular-ionization-structure-analyzer/main",
+      "scripts": [
+        {
+          "name": "NebularIonizationStructureAnalyzer",
+          "baseDir": "src/scripts/NebularIonizationStructureAnalyzer",
+          "scriptFile": "NebularIonizationStructureAnalyzer.js",
+          "icon": "Icon.png"
+        }
+      ]
+    }
+  ]
+}
+

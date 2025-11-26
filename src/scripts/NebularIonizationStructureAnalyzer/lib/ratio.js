@@ -1,0 +1,63 @@
+/*
+ * Ratio map utilities.
+ */
+
+var NISARatios = (function () {
+
+   function computeRatio(numeratorView, denominatorView, options) {
+      var eps = (options && options.epsilon) || 1e-6;
+      var mask = options && options.mask;
+      var width = numeratorView.image.width;
+      var height = numeratorView.image.height;
+      var ratio = new Image(width, height, 1, FloatSample, 1);
+
+      for (var y = 0; y < height; y++) {
+         for (var x = 0; x < width; x++) {
+            if (mask && mask.sample(x, y) <= 0) {
+               ratio.setSample(0, x, y);
+               continue;
+            }
+            var num = numeratorView.image.sample(x, y);
+            var den = denominatorView.image.sample(x, y);
+            ratio.setSample(num / (den + eps), x, y);
+         }
+      }
+
+      return ratio;
+   }
+
+   function stretch(image, mode) {
+      mode = mode || "arcsinh";
+      var width = image.width;
+      var height = image.height;
+
+      if (mode === "minmax") {
+         var stats = new ImageStatistics;
+         stats.apply(image);
+         var min = stats.minimum[0];
+         var max = stats.maximum[0];
+         for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+               var v = image.sample(x, y);
+               var s = (v - min) / (max - min + 1e-9);
+               if (s < 0) s = 0;
+               if (s > 1) s = 1;
+               image.setSample(s, x, y);
+            }
+         }
+      } else {
+         for (var y2 = 0; y2 < height; y2++) {
+            for (var x2 = 0; x2 < width; x2++) {
+               var value = image.sample(x2, y2);
+               image.setSample(Math.asinh(value), x2, y2);
+            }
+         }
+      }
+   }
+
+   return {
+      computeRatio: computeRatio,
+      stretch: stretch
+   };
+})();
+

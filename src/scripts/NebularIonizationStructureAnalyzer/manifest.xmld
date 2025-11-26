@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ModuleManifest>
+  <Module>
+    <Name>NebularIonizationStructureAnalyzer</Name>
+    <Version>0.1.0</Version>
+    <Author>James</Author>
+    <Description>
+      PixInsight script that evaluates narrowband masters (Hα/OIII/SII) and produces ratio maps, segmentation, ionization fronts, PNG composites, and CSV metrics.
+    </Description>
+    <Script>NebularIonizationStructureAnalyzer.js</Script>
+    <Icon>Icon.png</Icon>
+  </Module>
+</ModuleManifest>
+

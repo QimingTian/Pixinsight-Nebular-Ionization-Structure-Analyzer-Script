@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PixInsightScript>
+  <Category>Science</Category>
+  <DisplayName>Nebular Ionization Structure Analyzer</DisplayName>
+  <Description>Generates line ratio maps, ionization zoning, fronts, and reports from narrowband masters.</Description>
+  <ScriptFile>NebularIonizationStructureAnalyzer.js</ScriptFile>
+</PixInsightScript>
+
