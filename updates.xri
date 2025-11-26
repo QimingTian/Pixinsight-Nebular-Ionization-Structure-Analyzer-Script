@@ -10,7 +10,7 @@
   </description>
   <platform os="all" arch="noarch" version="1.8.9:9999.9999.9999">
     <package fileName="NebularIonizationStructureAnalyzer.tar.gz"
-             sha1="6f91e0cf99657431212bf96b0c0466d29fb2e313"
+             sha1="08b56ab6ce0a75a3eaa8794d469f406483766ba7"
              type="script"
              releaseDate="20241126">
       <title>

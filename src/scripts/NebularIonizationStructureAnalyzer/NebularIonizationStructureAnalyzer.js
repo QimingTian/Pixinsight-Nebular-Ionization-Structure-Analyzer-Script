@@ -23,13 +23,11 @@ function createLabel(text, minWidth) {
 function createFileRow(caption, edit, button) {
    var row = new Sizer;
    row.spacing = 4;
-   row.minWidth = 600;
-   var label = createLabel(caption, 80);
-   label.minWidth = 80;
+   var label = createLabel(caption, 70);
    row.add(label);
-   edit.minWidth = 450;
+   edit.setFixedWidth(300);
    row.add(edit, 100);
-   button.minWidth = 30;
+   button.setFixedWidth(30);
    row.add(button);
    return row;
 }
@@ -116,87 +114,67 @@ function NISADialog() {
    var layout = new Sizer;
    layout.margin = 8;
    layout.spacing = 8;
-   layout.minWidth = 950;
 
    var title = createLabel("Nebular Ionization Structure Analyzer");
    title.font = new Font(title.font.family, title.font.pointSize + 2);
-   title.minWidth = 950;
    layout.add(title);
 
    // 将两个 GroupBox 放在同一行
    var groupsRow = new Sizer;
    groupsRow.spacing = 12;
-   groupsRow.minWidth = 950;
 
    // 使用 GroupBox 分组来强制布局
    var fileGroup = new GroupBox(this);
    fileGroup.title = "输入文件";
-   fileGroup.minWidth = 600;
    var fileGroupSizer = new Sizer;
    fileGroupSizer.margin = 6;
    fileGroupSizer.spacing = 6;
-   fileGroupSizer.minWidth = 580;
-   var haRow = createFileRow("Hα", this.haEdit, this.haButton);
-   haRow.minWidth = 580;
-   fileGroupSizer.add(haRow);
-   var oiiiRow = createFileRow("OIII", this.oiiiEdit, this.oiiiButton);
-   oiiiRow.minWidth = 580;
-   fileGroupSizer.add(oiiiRow);
-   var siiRow = createFileRow("SII", this.siiEdit, this.siiButton);
-   siiRow.minWidth = 580;
-   fileGroupSizer.add(siiRow);
-   var outputRow = createFileRow("输出目录", this.outputEdit, this.outputButton);
-   outputRow.minWidth = 580;
-   fileGroupSizer.add(outputRow);
+   fileGroupSizer.add(createFileRow("Hα", this.haEdit, this.haButton));
+   fileGroupSizer.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
+   fileGroupSizer.add(createFileRow("SII", this.siiEdit, this.siiButton));
+   fileGroupSizer.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
    fileGroup.sizer = fileGroupSizer;
-   groupsRow.add(fileGroup, 100);
+   groupsRow.add(fileGroup);
 
    var paramsGroup = new GroupBox(this);
    paramsGroup.title = "分析参数";
-   paramsGroup.minWidth = 300;
    var paramsGroupSizer = new Sizer;
    paramsGroupSizer.margin = 6;
    paramsGroupSizer.spacing = 6;
-   paramsGroupSizer.minWidth = 280;
    var shockRow = new Sizer;
    shockRow.spacing = 4;
-   shockRow.minWidth = 280;
-   this.shockSpinLabel.minWidth = 120;
-   this.shockSpin.minWidth = 80;
+   this.shockSpinLabel.setFixedWidth(100);
+   this.shockSpin.setFixedWidth(70);
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
    paramsGroupSizer.add(shockRow);
    var highIonRow = new Sizer;
    highIonRow.spacing = 4;
-   highIonRow.minWidth = 280;
-   this.highIonSpinLabel.minWidth = 120;
-   this.highIonSpin.minWidth = 80;
+   this.highIonSpinLabel.setFixedWidth(100);
+   this.highIonSpin.setFixedWidth(70);
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
    paramsGroupSizer.add(highIonRow);
    var snRow = new Sizer;
    snRow.spacing = 4;
-   snRow.minWidth = 280;
-   this.snSpinLabel.minWidth = 120;
-   this.snSpin.minWidth = 80;
+   this.snSpinLabel.setFixedWidth(100);
+   this.snSpin.setFixedWidth(70);
    snRow.add(this.snSpinLabel);
    snRow.add(this.snSpin);
    paramsGroupSizer.add(snRow);
    paramsGroup.sizer = paramsGroupSizer;
-   groupsRow.add(paramsGroup, 100);
+   groupsRow.add(paramsGroup);
 
    layout.add(groupsRow);
 
    // 底部：按钮和进度条
    var buttonRow = new Sizer;
    buttonRow.spacing = 6;
-   buttonRow.minWidth = 950;
-   this.runButton.minWidth = 120;
-   this.cancelButton.minWidth = 120;
+   this.runButton.setFixedWidth(100);
+   this.cancelButton.setFixedWidth(100);
    buttonRow.add(this.runButton);
    buttonRow.add(this.cancelButton);
    layout.add(buttonRow);
-   this.progressLabel.minWidth = 950;
    layout.add(this.progressLabel);
 
    this.sizer = layout;
