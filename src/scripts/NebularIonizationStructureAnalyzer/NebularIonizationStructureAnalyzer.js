@@ -22,7 +22,7 @@ function createLabel(text, minWidth) {
 }
 
 function createFileRow(caption, edit, button) {
-   var row = new HorizontalSizer;
+   var row = new Sizer;
    row.spacing = 4;
    row.add(createLabel(caption, 80));
    row.add(edit, 100);
@@ -109,7 +109,7 @@ function NISADialog() {
    this.progressLabel = new Label(this);
    this.progressLabel.text = "等待执行...";
 
-   var layout = new VerticalSizer;
+   var layout = new Sizer;
    layout.margin = 6;
    layout.spacing = 6;
 
@@ -121,19 +121,19 @@ function NISADialog() {
    layout.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
    layout.add(createFileRow("SII", this.siiEdit, this.siiButton));
 
-   var shockRow = new HorizontalSizer;
+   var shockRow = new Sizer;
    shockRow.spacing = 4;
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
    layout.add(shockRow);
 
-   var highIonRow = new HorizontalSizer;
+   var highIonRow = new Sizer;
    highIonRow.spacing = 4;
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
    layout.add(highIonRow);
 
-   var snRow = new HorizontalSizer;
+   var snRow = new Sizer;
    snRow.spacing = 4;
    snRow.add(this.snSpinLabel);
    snRow.add(this.snSpin);
@@ -141,7 +141,7 @@ function NISADialog() {
 
    layout.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
 
-   var buttonRow = new HorizontalSizer;
+   var buttonRow = new Sizer;
    buttonRow.spacing = 6;
    buttonRow.add(this.runButton);
    buttonRow.add(this.cancelButton);
