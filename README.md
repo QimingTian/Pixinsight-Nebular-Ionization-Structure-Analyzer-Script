@@ -34,8 +34,13 @@ tests/
 5. **前提条件**：脚本假设输入通道已经完成基础校准与 DBE/背景梯度处理，不再重复背景扣除。
 
 ## PixInsight 仓库布局
-PixInsight 仅识别特定的 repository 结构，本仓库已整理为：
+
+根据 [PixInsight 官方文档](https://pixinsight.com/doc/docs/PIRepositoryReference/PIRepositoryReference.html)，PixInsight 使用 **XRI (XML Repository Information)** 格式，不是 JSON。
+
+本仓库结构：
 ```
+updates.xri                    # XRI 格式的仓库信息文件（必需）
+NebularIonizationStructureAnalyzer.tar.gz  # 脚本压缩包
 src/
   scripts/
     NebularIonizationStructureAnalyzer/
@@ -50,17 +55,22 @@ src/
         segmentation.js
         multiscale.js
         report.js
-repository.json
 ```
-`repository.json` 已按照 PixInsight 官方示例声明脚本名称、基目录与入口文件。
 
 **在 PixInsight 中添加仓库：**
 1. 打开 `Resources › Updates › Manage Repositories`
-2. 添加新仓库，URL 填写：
+2. 添加新仓库，URL 填写（**必须带末尾斜杠**，指向仓库根目录）：
    ```
-   https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main/repository.json
+   https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main/
    ```
-3. 点击 "Check for Updates" 安装脚本
+3. PixInsight 会自动查找 `updates.xri` 文件
+4. 点击 "Check for Updates" 或 "Update All" 安装脚本
+
+**重要说明：**
+- PixInsight repository 必须提供 `updates.xri` 文件（XML 格式）
+- Repository URL 必须指向目录（末尾带斜杠），PixInsight 会自动查找 `updates.xri`
+- 脚本必须打包成压缩格式（tar.gz 或 zip）
+- 每个包必须有 SHA1 校验和用于验证完整性
 
 ## 路线图
 1. 定义通道输入与输出契约（`lib/io.js` 已提供基础实现）。

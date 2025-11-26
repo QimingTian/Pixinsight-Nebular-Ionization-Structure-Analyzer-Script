@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xri version="1.0">
+  <description>
+    <p>
+      Nebular Ionization Structure Analyzer — A PixInsight script repository for scientific narrowband image analysis.
+    </p>
+    <p>
+      This repository provides the NebularIonizationStructureAnalyzer script, which automatically analyzes narrowband astronomical images (Hα, OIII, SII) and generates line ratio maps, segmentation maps, ionization fronts, and scientific reports.
+    </p>
+  </description>
+  <platform os="all" arch="noarch" version="1.8.9:9999.9999.9999">
+    <package fileName="NebularIonizationStructureAnalyzer.tar.gz"
+             sha1="9912a07950c3774ad5bbfd6ff4a99d1e70b1f04c"
+             type="script"
+             releaseDate="20241126">
+      <title>
+        Nebular Ionization Structure Analyzer
+      </title>
+      <description>
+        <p>
+          A comprehensive PixInsight script for analyzing narrowband astronomical images (Hα, OIII, SII).
+          The script generates line ratio maps, pixel classification (shock-dominated, high-ionization, photoionized regions),
+          ionization front detection using multiscale analysis, and CSV reports with statistical metrics.
+        </p>
+        <p>
+          Features:
+        </p>
+        <p>
+          • Automatic ratio map computation (SII/Hα, OIII/Hα, OIII/SII)
+        </p>
+        <p>
+          • Pixel classification based on configurable thresholds
+        </p>
+        <p>
+          • Multiscale ionization front detection
+        </p>
+        <p>
+          • CSV report generation with area, mean ratio, and max ratio statistics
+        </p>
+        <p>
+          • PNG overlay visualization
+        </p>
+        <p>
+          Requirements: Input channels must be calibrated, aligned, and background-subtracted (DBE) before processing.
+        </p>
+      </description>
+    </package>
+  </platform>
+</xri>
+
