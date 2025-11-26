@@ -17,7 +17,6 @@ function createLabel(text, minWidth) {
    label.text = text;
    if (minWidth !== undefined)
       label.minWidth = minWidth;
-   label.textAlignment = TextAlign_Left;
    return label;
 }
 
