@@ -36,7 +36,7 @@ function NISADialog() {
 
    var self = this;
 
-   this.haEdit = new FileEdit;
+   this.haEdit = new Edit(this);
    this.haEdit.setToolTip("Hα FITS 文件路径");
    this.haButton = new ToolButton(this);
    this.haButton.text = "...";
@@ -47,7 +47,7 @@ function NISADialog() {
          self.haEdit.text = dlg.fileName;
    };
 
-   this.oiiiEdit = new FileEdit;
+   this.oiiiEdit = new Edit(this);
    this.oiiiButton = new ToolButton(this);
    this.oiiiButton.text = "...";
    this.oiiiButton.onClick = function () {
@@ -57,7 +57,7 @@ function NISADialog() {
          self.oiiiEdit.text = dlg.fileName;
    };
 
-   this.siiEdit = new FileEdit;
+   this.siiEdit = new Edit(this);
    this.siiButton = new ToolButton(this);
    this.siiButton.text = "...";
    this.siiButton.onClick = function () {
@@ -85,7 +85,7 @@ function NISADialog() {
    this.snSpin.label.text = "S/N 阈值";
    this.snSpin.setValue(3.0);
 
-   this.outputEdit = new FileEdit;
+   this.outputEdit = new Edit(this);
    this.outputEdit.setToolTip("分析结果输出目录");
    this.outputButton = new ToolButton(this);
    this.outputButton.text = "...";
