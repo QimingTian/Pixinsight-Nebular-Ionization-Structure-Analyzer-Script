@@ -50,10 +50,17 @@ src/
         segmentation.js
         multiscale.js
         report.js
-repository/
-  repository.json
+repository.json
 ```
-`repository/repository.json` 已按照 PixInsight 官方示例声明脚本名称、基目录与入口文件（默认仓库 URL 使用 `https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main`）。
+`repository.json` 已按照 PixInsight 官方示例声明脚本名称、基目录与入口文件。
+
+**在 PixInsight 中添加仓库：**
+1. 打开 `Resources › Updates › Manage Repositories`
+2. 添加新仓库，URL 填写：
+   ```
+   https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main/repository.json
+   ```
+3. 点击 "Check for Updates" 安装脚本
 
 ## 路线图
 1. 定义通道输入与输出契约（`lib/io.js` 已提供基础实现）。
