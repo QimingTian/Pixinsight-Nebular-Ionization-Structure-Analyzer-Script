@@ -53,7 +53,7 @@ src/
 repository/
   repository.json
 ```
-`repository/repository.json` 已按照 PixInsight 官方示例声明脚本名称、基目录与入口文件（默认仓库 URL 使用 `https://raw.githubusercontent.com/tianqiming/nebular-ionization-structure-analyzer/main`，若 GitHub 远程不同记得修改）。
+`repository/repository.json` 已按照 PixInsight 官方示例声明脚本名称、基目录与入口文件（默认仓库 URL 使用 `https://raw.githubusercontent.com/QimingTian/Pixinsight-Nebular-Ionization-Structure-Analyzer-Script/main`）。
 
 ## 路线图
 1. 定义通道输入与输出契约（`lib/io.js` 已提供基础实现）。
@@ -70,4 +70,3 @@ repository/
 4. 在脚本原型完成后进一步完善中文/英文文档与示例。
 
 后续可根据科研需求的变化对上述计划进行调整。
-
