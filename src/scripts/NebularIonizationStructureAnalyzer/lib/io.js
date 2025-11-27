@@ -56,14 +56,16 @@ var NISAIO = (function () {
       console.writeln("[DEBUG] Creating file object...");
       var file = new File;
       console.writeln("[DEBUG] Attempting to create file for writing: " + outputPath);
-      var createResult = file.createForWriting(outputPath);
-      console.writeln("[DEBUG] createForWriting result: " + createResult);
       
-      if (!createResult) {
-         console.writeln("[DEBUG] ERROR: Failed to create file");
+      // createForWriting may not return a boolean, just call it
+      try {
+         file.createForWriting(outputPath);
+         console.writeln("[DEBUG] createForWriting called successfully");
+      } catch (e) {
+         console.writeln("[DEBUG] ERROR in createForWriting: " + e.message);
          console.writeln("[DEBUG] File path: " + outputPath);
          console.writeln("[DEBUG] Directory exists: " + (dirPath.length > 0 ? File.directoryExists(dirPath) : "N/A"));
-         throw new Error("Failed to create CSV file: " + outputPath + " (check write permissions)");
+         throw new Error("Failed to create CSV file: " + outputPath + " - " + e.message);
       }
       
       console.writeln("[DEBUG] File created successfully, writing data...");
