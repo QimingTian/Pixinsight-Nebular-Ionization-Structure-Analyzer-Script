@@ -240,6 +240,9 @@ function runAnalysis(params, dialog) {
    var siiWin = NISAIO.openChannel(params.siiPath, "SII");
 
    NISAIO.ensureDir(params.outputDir);
+   
+   // Track temporary windows for cleanup
+   var tempWindows = [];
 
    try {
       dialog.setProgress("预处理...");
@@ -248,6 +251,10 @@ function runAnalysis(params, dialog) {
          haWin.mainView, haSigma, params.snThreshold, function(msg) {
             dialog.setProgress(msg);
          });
+      // Track the mask window for cleanup
+      if (noiseMask._window) {
+         tempWindows.push(noiseMask._window);
+      }
 
       dialog.setProgress("比值图 SII/Hα...");
       var ratioSIIHa = NISARatios.computeRatio(siiWin.mainView, haWin.mainView, {
@@ -308,6 +315,12 @@ function runAnalysis(params, dialog) {
 
       dialog.setProgress("完成");
    } finally {
+      // Close all temporary windows
+      for (var i = 0; i < tempWindows.length; i++) {
+         if (tempWindows[i] && !tempWindows[i].isNull) {
+            tempWindows[i].forceClose();
+         }
+      }
       haWin.forceClose();
       oiiiWin.forceClose();
       siiWin.forceClose();

@@ -82,15 +82,17 @@ var NISAPreprocessing = (function () {
       }
       
       console.writeln("[DEBUG] Creating result image...");
-      // Create a new ImageWindow to hold the result
+      // Create a new ImageWindow to hold the result (don't close it!)
       var resultWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask_result");
       resultWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       resultWin.mainView.image.assign(maskWin.mainView.image);
       resultWin.mainView.endProcess();
+      resultWin.hide(); // Hide the window but keep it open
       var result = resultWin.mainView.image;
       maskWin.forceClose();
-      resultWin.forceClose();
-      console.writeln("[DEBUG] buildNoiseMask: complete");
+      console.writeln("[DEBUG] buildNoiseMask: complete, returning image from open window");
+      // Store window reference in image object so we can close it later
+      result._window = resultWin;
       return result;
    }
 
