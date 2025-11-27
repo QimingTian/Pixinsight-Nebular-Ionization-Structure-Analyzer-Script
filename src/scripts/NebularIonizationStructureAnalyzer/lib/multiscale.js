@@ -24,7 +24,7 @@ var NISAMultiscale = (function () {
       mlt.layers = layers;
       
       mlt.transform = MultiscaleLinearTransform.prototype.StarletTransform;
-      mlt.scalingFunctionData = MultiscaleLinearTransform.prototype.Starlet5;
+      // Don't set scalingFunctionData - let PixInsight use default Starlet settings
       mlt.linearMask = false;
       mlt.executeOn(tmpWin.mainView);
 
