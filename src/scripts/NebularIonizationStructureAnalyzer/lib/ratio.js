@@ -9,7 +9,10 @@ var NISARatios = (function () {
       var mask = options && options.mask;
       var width = numeratorView.image.width;
       var height = numeratorView.image.height;
-      var ratio = new Image(width, height, 1, SampleType_Real, 1);
+      // Create ratio image using ImageWindow
+      var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
+      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      var ratio = ratioWin.mainView.image;
 
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
@@ -22,8 +25,10 @@ var NISARatios = (function () {
             ratio.setSample(num / (den + eps), x, y);
          }
       }
-
-      return ratio;
+      ratioWin.mainView.endProcess();
+      var result = ratio.clone();
+      ratioWin.forceClose();
+      return result;
    }
 
    function stretch(image, mode) {

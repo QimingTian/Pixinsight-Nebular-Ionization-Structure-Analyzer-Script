@@ -18,7 +18,10 @@ var NISASegmentation = (function () {
 
       var width = ratioSIIHa.width;
       var height = ratioSIIHa.height;
-      var segmentation = new Image(width, height, 1, SampleType_Real, 1);
+      // Create segmentation image using ImageWindow
+      var segWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_seg");
+      segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      var segmentation = segWin.mainView.image;
 
       var counts = {
          shock: 0,
@@ -48,9 +51,12 @@ var NISASegmentation = (function () {
             }
          }
       }
+      segWin.mainView.endProcess();
+      var result = segmentation.clone();
+      segWin.forceClose();
 
       return {
-         image: segmentation,
+         image: result,
          stats: counts
       };
    }

@@ -28,14 +28,20 @@ var NISAPreprocessing = (function () {
       var threshold = k * sigma;
       var width = view.image.width;
       var height = view.image.height;
-      var mask = new Image(width, height, 1, SampleType_Real, 1);
+      // Create mask using ImageWindow
+      var maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
+      maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      var mask = maskWin.mainView.image;
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             var value = view.image.sample(x, y);
             mask.setSample(value > threshold ? 1 : 0, x, y);
          }
       }
-      return mask;
+      maskWin.mainView.endProcess();
+      var result = mask.clone();
+      maskWin.forceClose();
+      return result;
    }
 
    function normalizeChannel(view, scaleFactor) {

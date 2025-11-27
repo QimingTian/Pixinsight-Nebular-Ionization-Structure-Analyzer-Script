@@ -3,6 +3,7 @@
 
 #include <pjsr/Sizer.jsh>
 #include <pjsr/SampleType.jsh>
+#include <pjsr/UndoFlag.jsh>
 
 #include "lib/io.js"
 #include "lib/preprocessing.js"
@@ -192,7 +193,10 @@ NISADialog.prototype.setProgress = function (text) {
 function buildOverlayImage(ratioImage, segmentationImage) {
    var width = ratioImage.width;
    var height = ratioImage.height;
-   var overlay = new Image(width, height, 3, SampleType_Real, 1);
+   // Create overlay image using ImageWindow
+   var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
+   overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+   var overlay = overlayWin.mainView.image;
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
         var label = segmentationImage.sample(x, y);
@@ -209,7 +213,10 @@ function buildOverlayImage(ratioImage, segmentationImage) {
         overlay.setSample(b, x, y, 2);
      }
    }
-   return overlay;
+   overlayWin.mainView.endProcess();
+   var result = overlay.clone();
+   overlayWin.forceClose();
+   return result;
 }
 
 function runAnalysis(params, dialog) {
