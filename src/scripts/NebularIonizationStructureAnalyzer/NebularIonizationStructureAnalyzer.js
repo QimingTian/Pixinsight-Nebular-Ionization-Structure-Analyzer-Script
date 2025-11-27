@@ -25,10 +25,12 @@ function createFileRow(caption, edit, button) {
    row.spacing = 4;
    var label = createLabel(caption, 70);
    row.add(label);
-   edit.setFixedWidth(300);
+   edit.setFixedWidth(400);
    row.add(edit, 100);
    button.setFixedWidth(30);
    row.add(button);
+   // 强制行占据整行
+   row.minWidth = 500;
    return row;
 }
 
@@ -119,53 +121,36 @@ function NISADialog() {
    title.font = new Font(title.font.family, title.font.pointSize + 2);
    layout.add(title);
 
-   // 将两个 GroupBox 放在同一行
-   var groupsRow = new Sizer;
-   groupsRow.spacing = 12;
+   // 直接垂直排列所有控件，每个占据整行
+   layout.add(createFileRow("Hα", this.haEdit, this.haButton));
+   layout.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
+   layout.add(createFileRow("SII", this.siiEdit, this.siiButton));
+   layout.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
 
-   // 使用 GroupBox 分组来强制布局
-   var fileGroup = new GroupBox(this);
-   fileGroup.title = "输入文件";
-   var fileGroupSizer = new Sizer;
-   fileGroupSizer.margin = 6;
-   fileGroupSizer.spacing = 6;
-   fileGroupSizer.add(createFileRow("Hα", this.haEdit, this.haButton));
-   fileGroupSizer.add(createFileRow("OIII", this.oiiiEdit, this.oiiiButton));
-   fileGroupSizer.add(createFileRow("SII", this.siiEdit, this.siiButton));
-   fileGroupSizer.add(createFileRow("输出目录", this.outputEdit, this.outputButton));
-   fileGroup.sizer = fileGroupSizer;
-   groupsRow.add(fileGroup);
-
-   var paramsGroup = new GroupBox(this);
-   paramsGroup.title = "分析参数";
-   var paramsGroupSizer = new Sizer;
-   paramsGroupSizer.margin = 6;
-   paramsGroupSizer.spacing = 6;
+   // 参数行，每个占据整行
    var shockRow = new Sizer;
    shockRow.spacing = 4;
    this.shockSpinLabel.setFixedWidth(100);
    this.shockSpin.setFixedWidth(70);
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
-   paramsGroupSizer.add(shockRow);
+   layout.add(shockRow);
+
    var highIonRow = new Sizer;
    highIonRow.spacing = 4;
    this.highIonSpinLabel.setFixedWidth(100);
    this.highIonSpin.setFixedWidth(70);
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
-   paramsGroupSizer.add(highIonRow);
+   layout.add(highIonRow);
+
    var snRow = new Sizer;
    snRow.spacing = 4;
    this.snSpinLabel.setFixedWidth(100);
    this.snSpin.setFixedWidth(70);
    snRow.add(this.snSpinLabel);
    snRow.add(this.snSpin);
-   paramsGroupSizer.add(snRow);
-   paramsGroup.sizer = paramsGroupSizer;
-   groupsRow.add(paramsGroup);
-
-   layout.add(groupsRow);
+   layout.add(snRow);
 
    // 底部：按钮和进度条
    var buttonRow = new Sizer;
