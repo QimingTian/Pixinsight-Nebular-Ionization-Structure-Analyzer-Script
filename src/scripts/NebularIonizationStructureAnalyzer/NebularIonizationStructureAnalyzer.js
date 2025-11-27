@@ -190,7 +190,7 @@ NISADialog.prototype.setProgress = function (text) {
    processEvents();
 };
 
-function buildOverlayImage(ratioImage, segmentationImage) {
+function buildOverlayImage(ratioImage, segmentationImage, progressCallback) {
    var width = ratioImage.width;
    var height = ratioImage.height;
    // Create overlay image using ImageWindow
@@ -198,6 +198,9 @@ function buildOverlayImage(ratioImage, segmentationImage) {
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
    overlayWin.mainView.image.fill(0); // Initialize to zero
    // Now set sample values in the same process block
+   var totalPixels = width * height;
+   var processedPixels = 0;
+   var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
         var label = segmentationImage.sample(x, y);
@@ -212,6 +215,13 @@ function buildOverlayImage(ratioImage, segmentationImage) {
         overlayWin.mainView.image.setSample(r, x, y, 0);
         overlayWin.mainView.image.setSample(g, x, y, 1);
         overlayWin.mainView.image.setSample(b, x, y, 2);
+        processedPixels++;
+        if (processedPixels % updateInterval === 0) {
+           if (progressCallback) {
+              progressCallback("绘制覆盖图: " + Math.floor(processedPixels * 100 / totalPixels) + "%");
+           }
+           processEvents(); // Update UI
+        }
      }
    }
    overlayWin.mainView.endProcess();
@@ -232,20 +242,27 @@ function runAnalysis(params, dialog) {
       dialog.setProgress("预处理...");
       var haSigma = NISAPreprocessing.estimateNoiseSigma(haWin.mainView);
       var noiseMask = NISAPreprocessing.buildNoiseMask(
-         haWin.mainView, haSigma, params.snThreshold);
+         haWin.mainView, haSigma, params.snThreshold, function(msg) {
+            dialog.setProgress(msg);
+         });
 
-      dialog.setProgress("比值图...");
+      dialog.setProgress("比值图 SII/Hα...");
       var ratioSIIHa = NISARatios.computeRatio(siiWin.mainView, haWin.mainView, {
          epsilon: NISAConfig.epsilon,
-         mask: noiseMask
+         mask: noiseMask,
+         progressCallback: function(msg) { dialog.setProgress(msg); }
       });
+      dialog.setProgress("比值图 OIII/Hα...");
       var ratioOIIIHa = NISARatios.computeRatio(oiiiWin.mainView, haWin.mainView, {
          epsilon: NISAConfig.epsilon,
-         mask: noiseMask
+         mask: noiseMask,
+         progressCallback: function(msg) { dialog.setProgress(msg); }
       });
+      dialog.setProgress("比值图 OIII/SII...");
       var ratioOIIISII = NISARatios.computeRatio(oiiiWin.mainView, siiWin.mainView, {
          epsilon: NISAConfig.epsilon,
-         mask: noiseMask
+         mask: noiseMask,
+         progressCallback: function(msg) { dialog.setProgress(msg); }
       });
 
       dialog.setProgress("保存比值 FITS...");
@@ -258,7 +275,8 @@ function runAnalysis(params, dialog) {
          ratioSIIHa, ratioOIIIHa, {
             shockThreshold: params.shockThreshold,
             highIonThreshold: params.highIonThreshold,
-            mask: noiseMask
+            mask: noiseMask,
+            progressCallback: function(msg) { dialog.setProgress(msg); }
          });
 
       NISAIO.saveImage(segmentationResult.image, params.outputDir + "/segmentation.fits");
@@ -280,7 +298,9 @@ function runAnalysis(params, dialog) {
       );
 
       dialog.setProgress("绘制 PNG 覆盖图...");
-      var overlay = buildOverlayImage(ratioOIIIHa, segmentationResult.image);
+      var overlay = buildOverlayImage(ratioOIIIHa, segmentationResult.image, function(msg) {
+         dialog.setProgress(msg);
+      });
       NISAIO.saveImage(overlay, params.outputDir + "/overlay.png");
 
       dialog.setProgress("完成");

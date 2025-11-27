@@ -7,6 +7,7 @@ var NISARatios = (function () {
    function computeRatio(numeratorView, denominatorView, options) {
       var eps = (options && options.epsilon) || 1e-6;
       var mask = options && options.mask;
+      var progressCallback = options && options.progressCallback;
       var width = numeratorView.image.width;
       var height = numeratorView.image.height;
       // Create ratio image using ImageWindow
@@ -14,15 +15,26 @@ var NISARatios = (function () {
       ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       ratioWin.mainView.image.fill(0); // Initialize to zero
       // Now set sample values in the same process block
+      var totalPixels = width * height;
+      var processedPixels = 0;
+      var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             if (mask && mask.sample(x, y) <= 0) {
                ratioWin.mainView.image.setSample(0, x, y);
-               continue;
+               processedPixels++;
+            } else {
+               var num = numeratorView.image.sample(x, y);
+               var den = denominatorView.image.sample(x, y);
+               ratioWin.mainView.image.setSample(num / (den + eps), x, y);
+               processedPixels++;
             }
-            var num = numeratorView.image.sample(x, y);
-            var den = denominatorView.image.sample(x, y);
-            ratioWin.mainView.image.setSample(num / (den + eps), x, y);
+            if (processedPixels % updateInterval === 0) {
+               if (progressCallback) {
+                  progressCallback("计算比值: " + Math.floor(processedPixels * 100 / totalPixels) + "%");
+               }
+               processEvents(); // Update UI
+            }
          }
       }
       ratioWin.mainView.endProcess();
