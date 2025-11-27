@@ -12,6 +12,7 @@ var NISARatios = (function () {
       // Create ratio image using ImageWindow
       var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
       ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      ratioWin.mainView.image.fill(0); // Initialize to zero
       var ratio = ratioWin.mainView.image;
 
       for (var y = 0; y < height; y++) {

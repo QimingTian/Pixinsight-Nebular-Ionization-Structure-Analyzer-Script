@@ -31,15 +31,15 @@ var NISAPreprocessing = (function () {
       // Create mask using ImageWindow
       var maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
       maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      var mask = maskWin.mainView.image;
+      maskWin.mainView.image.fill(0); // Initialize to zero
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             var value = view.image.sample(x, y);
-            mask.setSample(value > threshold ? 1 : 0, x, y);
+            maskWin.mainView.image.setSample(value > threshold ? 1 : 0, x, y);
          }
       }
       maskWin.mainView.endProcess();
-      var result = mask.clone();
+      var result = maskWin.mainView.image.clone();
       maskWin.forceClose();
       return result;
    }

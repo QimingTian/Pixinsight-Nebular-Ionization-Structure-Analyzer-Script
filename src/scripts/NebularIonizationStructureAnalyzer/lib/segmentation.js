@@ -21,6 +21,7 @@ var NISASegmentation = (function () {
       // Create segmentation image using ImageWindow
       var segWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_seg");
       segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      segWin.mainView.image.fill(0); // Initialize to zero
       var segmentation = segWin.mainView.image;
 
       var counts = {

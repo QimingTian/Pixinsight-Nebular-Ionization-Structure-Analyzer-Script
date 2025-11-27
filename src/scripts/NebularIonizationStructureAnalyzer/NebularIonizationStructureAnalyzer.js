@@ -196,6 +196,7 @@ function buildOverlayImage(ratioImage, segmentationImage) {
    // Create overlay image using ImageWindow
    var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+   overlayWin.mainView.image.fill(0); // Initialize to zero
    var overlay = overlayWin.mainView.image;
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
