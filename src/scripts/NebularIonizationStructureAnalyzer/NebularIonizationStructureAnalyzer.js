@@ -1,6 +1,8 @@
 #feature-id    NebularIonizationStructureAnalyzer:main
 #feature-info  Generates line ratio maps, segmentation, ionization fronts and reports.
 
+#include <pjsr/Sizer.jsh>
+
 #include "lib/io.js"
 #include "lib/preprocessing.js"
 #include "lib/ratio.js"
@@ -21,7 +23,7 @@ function createLabel(text, minWidth) {
 }
 
 function createFileRow(caption, edit, button) {
-   var row = new Sizer;
+   var row = new HorizontalSizer;
    row.spacing = 4;
    var label = createLabel(caption, 70);
    row.add(label);
@@ -111,7 +113,7 @@ function NISADialog() {
    this.progressLabel = new Label(this);
    this.progressLabel.text = "等待执行...";
 
-   var layout = new Sizer;
+   var layout = new VerticalSizer;
    layout.margin = 8;
    layout.spacing = 8;
 
@@ -121,40 +123,33 @@ function NISADialog() {
 
    // 直接垂直排列所有控件，每个占据整行
    var haRow = createFileRow("Hα", this.haEdit, this.haButton);
-   haRow.minWidth = 500;
    layout.add(haRow);
    var oiiiRow = createFileRow("OIII", this.oiiiEdit, this.oiiiButton);
-   oiiiRow.minWidth = 500;
    layout.add(oiiiRow);
    var siiRow = createFileRow("SII", this.siiEdit, this.siiButton);
-   siiRow.minWidth = 500;
    layout.add(siiRow);
    var outputRow = createFileRow("输出目录", this.outputEdit, this.outputButton);
-   outputRow.minWidth = 500;
    layout.add(outputRow);
 
    // 参数行，每个占据整行
-   var shockRow = new Sizer;
+   var shockRow = new HorizontalSizer;
    shockRow.spacing = 4;
-   shockRow.minWidth = 500;
    this.shockSpinLabel.setFixedWidth(100);
    this.shockSpin.setFixedWidth(70);
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
    layout.add(shockRow);
 
-   var highIonRow = new Sizer;
+   var highIonRow = new HorizontalSizer;
    highIonRow.spacing = 4;
-   highIonRow.minWidth = 500;
    this.highIonSpinLabel.setFixedWidth(100);
    this.highIonSpin.setFixedWidth(70);
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
    layout.add(highIonRow);
 
-   var snRow = new Sizer;
+   var snRow = new HorizontalSizer;
    snRow.spacing = 4;
-   snRow.minWidth = 500;
    this.snSpinLabel.setFixedWidth(100);
    this.snSpin.setFixedWidth(70);
    snRow.add(this.snSpinLabel);
@@ -162,9 +157,8 @@ function NISADialog() {
    layout.add(snRow);
 
    // 底部：按钮和进度条
-   var buttonRow = new Sizer;
+   var buttonRow = new HorizontalSizer;
    buttonRow.spacing = 6;
-   buttonRow.minWidth = 500;
    this.runButton.setFixedWidth(100);
    this.cancelButton.setFixedWidth(100);
    buttonRow.add(this.runButton);
