@@ -297,6 +297,9 @@ function runAnalysis(params, dialog) {
             mask: noiseMask,
             progressCallback: function(msg) { dialog.setProgress(msg); }
          });
+      if (segmentationResult.image._window) {
+         tempWindows.push(segmentationResult.image._window);
+      }
 
       NISAIO.saveImage(segmentationResult.image, params.outputDir + "/segmentation.fits");
 
