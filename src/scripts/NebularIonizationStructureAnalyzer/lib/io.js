@@ -34,20 +34,46 @@ var NISAIO = (function () {
    }
 
    function writeCSV(outputPath, headers, rows) {
+      console.writeln("[DEBUG] writeCSV: starting");
+      console.writeln("[DEBUG] outputPath: " + outputPath);
+      
       // Ensure directory exists - extract path using string operations
       var lastSlash = Math.max(outputPath.lastIndexOf("/"), outputPath.lastIndexOf("\\"));
       var dirPath = lastSlash >= 0 ? outputPath.substring(0, lastSlash) : "";
-      if (dirPath.length > 0 && !File.directoryExists(dirPath)) {
-         File.createDirectory(dirPath, true);
+      console.writeln("[DEBUG] dirPath: " + dirPath);
+      
+      if (dirPath.length > 0) {
+         console.writeln("[DEBUG] Checking if directory exists: " + dirPath);
+         var dirExists = File.directoryExists(dirPath);
+         console.writeln("[DEBUG] Directory exists: " + dirExists);
+         if (!dirExists) {
+            console.writeln("[DEBUG] Creating directory: " + dirPath);
+            File.createDirectory(dirPath, true);
+            console.writeln("[DEBUG] Directory created");
+         }
       }
       
+      console.writeln("[DEBUG] Creating file object...");
       var file = new File;
-      if (!file.createForWriting(outputPath)) {
-         throw new Error("无法创建 CSV 文件: " + outputPath + " (可能没有写入权限)");
+      console.writeln("[DEBUG] Attempting to create file for writing: " + outputPath);
+      var createResult = file.createForWriting(outputPath);
+      console.writeln("[DEBUG] createForWriting result: " + createResult);
+      
+      if (!createResult) {
+         console.writeln("[DEBUG] ERROR: Failed to create file");
+         console.writeln("[DEBUG] File path: " + outputPath);
+         console.writeln("[DEBUG] Directory exists: " + (dirPath.length > 0 ? File.directoryExists(dirPath) : "N/A"));
+         throw new Error("Failed to create CSV file: " + outputPath + " (check write permissions)");
       }
+      
+      console.writeln("[DEBUG] File created successfully, writing data...");
+      console.writeln("[DEBUG] Headers: " + headers.join(","));
+      console.writeln("[DEBUG] Number of rows: " + rows.length);
       
       try {
          file.outText(headers.join(",") + "\n");
+         console.writeln("[DEBUG] Headers written");
+         
          for (var i = 0; i < rows.length; i++) {
             // Convert all values to strings and escape commas if needed
             var row = rows[i].map(function(val) {
@@ -58,10 +84,21 @@ var NISAIO = (function () {
                return str;
             });
             file.outText(row.join(",") + "\n");
+            if (i === 0) {
+               console.writeln("[DEBUG] First row written: " + row.join(","));
+            }
          }
+         console.writeln("[DEBUG] All rows written");
+      } catch (e) {
+         console.writeln("[DEBUG] ERROR during write: " + e.message);
+         throw e;
       } finally {
+         console.writeln("[DEBUG] Closing file...");
          file.close();
+         console.writeln("[DEBUG] File closed");
       }
+      
+      console.writeln("[DEBUG] writeCSV: complete");
    }
 
    return {
