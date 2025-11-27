@@ -20,8 +20,8 @@ function createLabel(text, minWidth) {
    return label;
 }
 
-function createFileRow(dialog, caption, edit, button) {
-   var row = new HorizontalSizer(dialog);
+function createFileRow(caption, edit, button) {
+   var row = new Sizer;
    row.spacing = 4;
    var label = createLabel(caption, 70);
    row.add(label);
@@ -111,7 +111,7 @@ function NISADialog() {
    this.progressLabel = new Label(this);
    this.progressLabel.text = "等待执行...";
 
-   var layout = new VerticalSizer(this);
+   var layout = new Sizer;
    layout.margin = 8;
    layout.spacing = 8;
 
@@ -120,34 +120,41 @@ function NISADialog() {
    layout.add(title);
 
    // 直接垂直排列所有控件，每个占据整行
-   var haRow = createFileRow(this, "Hα", this.haEdit, this.haButton);
+   var haRow = createFileRow("Hα", this.haEdit, this.haButton);
+   haRow.minWidth = 500;
    layout.add(haRow);
-   var oiiiRow = createFileRow(this, "OIII", this.oiiiEdit, this.oiiiButton);
+   var oiiiRow = createFileRow("OIII", this.oiiiEdit, this.oiiiButton);
+   oiiiRow.minWidth = 500;
    layout.add(oiiiRow);
-   var siiRow = createFileRow(this, "SII", this.siiEdit, this.siiButton);
+   var siiRow = createFileRow("SII", this.siiEdit, this.siiButton);
+   siiRow.minWidth = 500;
    layout.add(siiRow);
-   var outputRow = createFileRow(this, "输出目录", this.outputEdit, this.outputButton);
+   var outputRow = createFileRow("输出目录", this.outputEdit, this.outputButton);
+   outputRow.minWidth = 500;
    layout.add(outputRow);
 
    // 参数行，每个占据整行
-   var shockRow = new HorizontalSizer(this);
+   var shockRow = new Sizer;
    shockRow.spacing = 4;
+   shockRow.minWidth = 500;
    this.shockSpinLabel.setFixedWidth(100);
    this.shockSpin.setFixedWidth(70);
    shockRow.add(this.shockSpinLabel);
    shockRow.add(this.shockSpin);
    layout.add(shockRow);
 
-   var highIonRow = new HorizontalSizer(this);
+   var highIonRow = new Sizer;
    highIonRow.spacing = 4;
+   highIonRow.minWidth = 500;
    this.highIonSpinLabel.setFixedWidth(100);
    this.highIonSpin.setFixedWidth(70);
    highIonRow.add(this.highIonSpinLabel);
    highIonRow.add(this.highIonSpin);
    layout.add(highIonRow);
 
-   var snRow = new HorizontalSizer(this);
+   var snRow = new Sizer;
    snRow.spacing = 4;
+   snRow.minWidth = 500;
    this.snSpinLabel.setFixedWidth(100);
    this.snSpin.setFixedWidth(70);
    snRow.add(this.snSpinLabel);
@@ -155,8 +162,9 @@ function NISADialog() {
    layout.add(snRow);
 
    // 底部：按钮和进度条
-   var buttonRow = new HorizontalSizer(this);
+   var buttonRow = new Sizer;
    buttonRow.spacing = 6;
+   buttonRow.minWidth = 500;
    this.runButton.setFixedWidth(100);
    this.cancelButton.setFixedWidth(100);
    buttonRow.add(this.runButton);
