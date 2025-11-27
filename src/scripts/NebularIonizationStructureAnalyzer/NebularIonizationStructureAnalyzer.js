@@ -199,8 +199,8 @@ function buildOverlayImage(ratioImage, segmentationImage, progressCallback) {
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
    overlayWin.mainView.image.fill(0);
    overlayWin.mainView.endProcess();
-   // Second process: set sample values
-   overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+   // Second process: set sample values (NO UndoFlag_NoSwapFile like AutoDBE.js)
+   overlayWin.mainView.beginProcess(); // No UndoFlag_NoSwapFile here!
    var totalPixels = width * height;
    var processedPixels = 0;
    var updateInterval = Math.floor(totalPixels / 20); // Update every 5%

@@ -25,8 +25,8 @@ var NISASegmentation = (function () {
       segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       segWin.mainView.image.fill(0);
       segWin.mainView.endProcess();
-      // Second process: set sample values
-      segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      // Second process: set sample values (NO UndoFlag_NoSwapFile like AutoDBE.js)
+      segWin.mainView.beginProcess(); // No UndoFlag_NoSwapFile here!
 
       var counts = {
          shock: 0,

@@ -16,8 +16,8 @@ var NISARatios = (function () {
       ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       ratioWin.mainView.image.fill(0);
       ratioWin.mainView.endProcess();
-      // Second process: set sample values
-      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      // Second process: set sample values (NO UndoFlag_NoSwapFile like AutoDBE.js)
+      ratioWin.mainView.beginProcess(); // No UndoFlag_NoSwapFile here!
       var totalPixels = width * height;
       var processedPixels = 0;
       var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
