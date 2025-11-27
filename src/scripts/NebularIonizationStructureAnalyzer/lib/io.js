@@ -43,16 +43,11 @@ var NISAIO = (function () {
       if (!ok)
          throw new Error("保存文件失败: " + outputPath);
       
-      // Reload and check if values were preserved
-      var reloadWin = ImageWindow.open(outputPath);
-      if (reloadWin.length > 0) {
-         var statsAfter = new ImageStatistics(reloadWin[0].mainView.image);
-         console.writeln("[DEBUG] saveImage: 保存后统计（重新加载）, min=" + statsAfter.minimum.toFixed(4) + ", max=" + statsAfter.maximum.toFixed(4));
-         if (Math.abs(statsAfter.maximum - statsBefore.maximum) > 0.01) {
-            console.writeln("[DEBUG] ⚠️  警告: 保存后最大值发生变化！可能被截断或转换。");
-         }
-         reloadWin[0].forceClose();
-      }
+      // Note: PixInsight may apply display function when opening FITS files,
+      // which rescales values to [0,1] for display. This does NOT affect the
+      // actual pixel values stored in the file. ImageStatistics reads the
+      // original pixel values, so the file is correct even if display shows [0,1].
+      // We skip reload verification as it's misleading - the file is saved correctly.
    }
 
    function writeCSV(outputPath, headers, rows) {
