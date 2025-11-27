@@ -34,8 +34,9 @@ var NISAIO = (function () {
    }
 
    function writeCSV(outputPath, headers, rows) {
-      // Ensure directory exists
-      var dirPath = File.extractPath(outputPath);
+      // Ensure directory exists - extract path using string operations
+      var lastSlash = Math.max(outputPath.lastIndexOf("/"), outputPath.lastIndexOf("\\"));
+      var dirPath = lastSlash >= 0 ? outputPath.substring(0, lastSlash) : "";
       if (dirPath.length > 0 && !File.directoryExists(dirPath)) {
          File.createDirectory(dirPath, true);
       }
