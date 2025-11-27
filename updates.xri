@@ -10,9 +10,9 @@
   </description>
   <platform os="all" arch="noarch" version="1.8.9:9999.9999.9999">
     <package fileName="NebularIonizationStructureAnalyzer.tar.gz"
-             sha1="7168cf9452df7d3797748dfcd3b11ccd78eb77ef"
+             sha1="74988f7dfc0e26b63fa6354a9719ac2a172f4e5b"
              type="script"
-             releaseDate="20241126">
+             releaseDate="20251127">
       <title>
         Nebular Ionization Structure Analyzer
       </title>

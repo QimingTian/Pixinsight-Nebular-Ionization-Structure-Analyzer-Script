@@ -242,6 +242,27 @@ function runAnalysis(params, dialog) {
    var oiiiWin = NISAIO.openChannel(params.oiiiPath, "OIII");
    var siiWin = NISAIO.openChannel(params.siiPath, "SII");
 
+   // Check input image statistics for normalization detection
+   console.writeln("\n=== 输入图像统计信息 ===");
+   var haStats = new ImageStatistics(haWin.mainView.image);
+   var oiiiStats = new ImageStatistics(oiiiWin.mainView.image);
+   var siiStats = new ImageStatistics(siiWin.mainView.image);
+   
+   console.writeln("Hα:   min=" + haStats.minimum.toFixed(4) + ", max=" + haStats.maximum.toFixed(4) + ", median=" + haStats.median.toFixed(4));
+   console.writeln("OIII: min=" + oiiiStats.minimum.toFixed(4) + ", max=" + oiiiStats.maximum.toFixed(4) + ", median=" + oiiiStats.median.toFixed(4));
+   console.writeln("SII:  min=" + siiStats.minimum.toFixed(4) + ", max=" + siiStats.maximum.toFixed(4) + ", median=" + siiStats.median.toFixed(4));
+   
+   // Warn if images appear normalized
+   if (haStats.maximum <= 1.1 && oiiiStats.maximum <= 1.1 && siiStats.maximum <= 1.1) {
+      console.writeln("\n⚠️  警告: 输入图像可能已被归一化到 [0,1] 范围！");
+      console.writeln("   如果图像已归一化，比值图也会在 [0,1] 范围内，这不是物理比值。");
+      console.writeln("   建议使用未归一化的原始数据（线性数据）进行分析。");
+      console.writeln("   如果必须使用归一化数据，需要相应调整阈值：");
+      console.writeln("     - SII/Hα 阈值: 0.5 → 0.4-0.5 (归一化后)");
+      console.writeln("     - OIII/Hα 阈值: 1.0 → 0.7-0.9 (归一化后)");
+   }
+   console.writeln("===================\n");
+
    NISAIO.ensureDir(params.outputDir);
    
    // Track temporary windows for cleanup
@@ -291,6 +312,35 @@ function runAnalysis(params, dialog) {
       NISAIO.saveImage(ratioSIIHa, params.outputDir + "/ratio_SII_Ha.fits");
       NISAIO.saveImage(ratioOIIIHa, params.outputDir + "/ratio_OIII_Ha.fits");
       NISAIO.saveImage(ratioOIIISII, params.outputDir + "/ratio_OIII_SII.fits");
+      
+      // Print ratio statistics for diagnosis
+      console.writeln("\n=== 比值图统计信息 ===");
+      var siiHaStats = new ImageStatistics(ratioSIIHa);
+      var oiiiHaStats = new ImageStatistics(ratioOIIIHa);
+      var oiiiSiiStats = new ImageStatistics(ratioOIIISII);
+      
+      console.writeln("SII/Hα:   min=" + siiHaStats.minimum.toFixed(4) + ", max=" + siiHaStats.maximum.toFixed(4) + 
+                     ", median=" + siiHaStats.median.toFixed(4) + ", mean=" + siiHaStats.mean.toFixed(4));
+      console.writeln("OIII/Hα:  min=" + oiiiHaStats.minimum.toFixed(4) + ", max=" + oiiiHaStats.maximum.toFixed(4) + 
+                     ", median=" + oiiiHaStats.median.toFixed(4) + ", mean=" + oiiiHaStats.mean.toFixed(4));
+      console.writeln("OIII/SII:  min=" + oiiiSiiStats.minimum.toFixed(4) + ", max=" + oiiiSiiStats.maximum.toFixed(4) + 
+                     ", median=" + oiiiSiiStats.median.toFixed(4) + ", mean=" + oiiiSiiStats.mean.toFixed(4));
+      
+      // Check if ratios are in normalized range
+      if (siiHaStats.maximum <= 1.1 && oiiiHaStats.maximum <= 1.1 && oiiiSiiStats.maximum <= 1.1) {
+         console.writeln("\n⚠️  检测到比值图在 [0,1] 范围内（可能已归一化）");
+         console.writeln("   当前阈值设置:");
+         console.writeln("     - SII/Hα 阈值: " + params.shockThreshold);
+         console.writeln("     - OIII/Hα 阈值: " + params.highIonThreshold);
+         console.writeln("\n   对于归一化数据，建议阈值:");
+         console.writeln("     - SII/Hα: 0.4-0.5 (激波)");
+         console.writeln("     - OIII/Hα: 0.7-0.9 (高电离)");
+      } else {
+         console.writeln("\n提示: 典型 HII 区域比值（未归一化）:");
+         console.writeln("  - SII/Hα: 0.2-0.4 (光致电离), 0.5-1.5+ (激波)");
+         console.writeln("  - OIII/Hα: 0.3-0.8 (光致电离), 1.0+ (高电离)");
+      }
+      console.writeln("===================\n");
 
       dialog.setProgress("像素分类...");
       var segmentationResult = NISASegmentation.classifyPixels(
