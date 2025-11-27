@@ -18,7 +18,7 @@ var NISASegmentation = (function () {
 
       var width = ratioSIIHa.width;
       var height = ratioSIIHa.height;
-      var segmentation = new Image(width, height, 1, FloatSample, 1);
+      var segmentation = new Image(width, height, 1, SampleType_Real, 1);
 
       var counts = {
          shock: 0,

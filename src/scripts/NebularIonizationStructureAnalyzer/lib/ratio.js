@@ -9,7 +9,7 @@ var NISARatios = (function () {
       var mask = options && options.mask;
       var width = numeratorView.image.width;
       var height = numeratorView.image.height;
-      var ratio = new Image(width, height, 1, FloatSample, 1);
+      var ratio = new Image(width, height, 1, SampleType_Real, 1);
 
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {

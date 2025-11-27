@@ -2,6 +2,7 @@
 #feature-info  Generates line ratio maps, segmentation, ionization fronts and reports.
 
 #include <pjsr/Sizer.jsh>
+#include <pjsr/SampleType.jsh>
 
 #include "lib/io.js"
 #include "lib/preprocessing.js"
@@ -191,7 +192,7 @@ NISADialog.prototype.setProgress = function (text) {
 function buildOverlayImage(ratioImage, segmentationImage) {
    var width = ratioImage.width;
    var height = ratioImage.height;
-   var overlay = new Image(width, height, 3, FloatSample, 1);
+   var overlay = new Image(width, height, 3, SampleType_Real, 1);
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
         var label = segmentationImage.sample(x, y);
