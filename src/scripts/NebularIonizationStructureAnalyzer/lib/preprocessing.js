@@ -6,8 +6,7 @@
 var NISAPreprocessing = (function () {
 
    function estimateNoiseSigma(view) {
-      var stats = new ImageStatistics;
-      stats.apply(view.image);
+      var stats = new ImageStatistics(view.image);
       return stats.sigma[0];
    }
 
