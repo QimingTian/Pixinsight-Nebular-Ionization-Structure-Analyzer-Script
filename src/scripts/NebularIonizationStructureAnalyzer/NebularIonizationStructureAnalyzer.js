@@ -252,14 +252,30 @@ function runAnalysis(params, dialog) {
    console.writeln("OIII: min=" + oiiiStats.minimum.toFixed(4) + ", max=" + oiiiStats.maximum.toFixed(4) + ", median=" + oiiiStats.median.toFixed(4));
    console.writeln("SII:  min=" + siiStats.minimum.toFixed(4) + ", max=" + siiStats.maximum.toFixed(4) + ", median=" + siiStats.median.toFixed(4));
    
+   // Check if images have display function applied (XISF files may contain display functions)
+   var haHasDisplayFunction = haWin.mainView.hasDisplayFunction;
+   var oiiiHasDisplayFunction = oiiiWin.mainView.hasDisplayFunction;
+   var siiHasDisplayFunction = siiWin.mainView.hasDisplayFunction;
+   
+   if (haHasDisplayFunction || oiiiHasDisplayFunction || siiHasDisplayFunction) {
+      console.writeln("\n⚠️  检测到显示函数（Display Function）:");
+      console.writeln("   Hα: " + (haHasDisplayFunction ? "是" : "否"));
+      console.writeln("   OIII: " + (oiiiHasDisplayFunction ? "是" : "否"));
+      console.writeln("   SII: " + (siiHasDisplayFunction ? "是" : "否"));
+      console.writeln("   注意: 显示函数可能影响像素值的读取。");
+      console.writeln("   脚本使用 mainView.image 读取原始像素值，应该不受显示函数影响。");
+   }
+   
    // Warn if images appear normalized
+   // Note: Even if max=1.0, it might be due to display function or file format, not actual normalization
    if (haStats.maximum <= 1.1 && oiiiStats.maximum <= 1.1 && siiStats.maximum <= 1.1) {
-      console.writeln("\n⚠️  警告: 输入图像可能已被归一化到 [0,1] 范围！");
-      console.writeln("   如果图像已归一化，比值图也会在 [0,1] 范围内，这不是物理比值。");
-      console.writeln("   建议使用未归一化的原始数据（线性数据）进行分析。");
-      console.writeln("   如果必须使用归一化数据，需要相应调整阈值：");
-      console.writeln("     - SII/Hα 阈值: 0.5 → 0.4-0.5 (归一化后)");
-      console.writeln("     - OIII/Hα 阈值: 1.0 → 0.7-0.9 (归一化后)");
+      console.writeln("\n⚠️  注意: 输入图像统计显示 max <= 1.1");
+      console.writeln("   可能原因:");
+      console.writeln("     1. 图像文件包含显示函数（Display Function）");
+      console.writeln("     2. 图像在保存时被归一化");
+      console.writeln("     3. 图像确实是归一化的");
+      console.writeln("   脚本已设置 normalized=false 和 rescaleResult=false，比值计算不会被截断。");
+      console.writeln("   如果比值图仍然被截断，请检查 PixelMath 的输出消息。");
    }
    console.writeln("===================\n");
 
@@ -309,12 +325,26 @@ function runAnalysis(params, dialog) {
       }
 
       dialog.setProgress("保存比值 FITS...");
+      
+      // Print ratio statistics BEFORE saving (from memory)
+      console.writeln("\n=== 比值图统计信息（保存前，内存中） ===");
+      var siiHaStatsBefore = new ImageStatistics(ratioSIIHa);
+      var oiiiHaStatsBefore = new ImageStatistics(ratioOIIIHa);
+      var oiiiSiiStatsBefore = new ImageStatistics(ratioOIIISII);
+      
+      console.writeln("SII/Hα:   min=" + siiHaStatsBefore.minimum.toFixed(4) + ", max=" + siiHaStatsBefore.maximum.toFixed(4) + 
+                     ", median=" + siiHaStatsBefore.median.toFixed(4) + ", mean=" + siiHaStatsBefore.mean.toFixed(4));
+      console.writeln("OIII/Hα:  min=" + oiiiHaStatsBefore.minimum.toFixed(4) + ", max=" + oiiiHaStatsBefore.maximum.toFixed(4) + 
+                     ", median=" + oiiiHaStatsBefore.median.toFixed(4) + ", mean=" + oiiiHaStatsBefore.mean.toFixed(4));
+      console.writeln("OIII/SII:  min=" + oiiiSiiStatsBefore.minimum.toFixed(4) + ", max=" + oiiiSiiStatsBefore.maximum.toFixed(4) + 
+                     ", median=" + oiiiSiiStatsBefore.median.toFixed(4) + ", mean=" + oiiiSiiStatsBefore.mean.toFixed(4));
+      
       NISAIO.saveImage(ratioSIIHa, params.outputDir + "/ratio_SII_Ha.fits");
       NISAIO.saveImage(ratioOIIIHa, params.outputDir + "/ratio_OIII_Ha.fits");
       NISAIO.saveImage(ratioOIIISII, params.outputDir + "/ratio_OIII_SII.fits");
       
-      // Print ratio statistics for diagnosis
-      console.writeln("\n=== 比值图统计信息 ===");
+      // Print ratio statistics AFTER saving (reload from file to check)
+      console.writeln("\n=== 比值图统计信息（保存后，从文件重新加载） ===");
       var siiHaStats = new ImageStatistics(ratioSIIHa);
       var oiiiHaStats = new ImageStatistics(ratioOIIIHa);
       var oiiiSiiStats = new ImageStatistics(ratioOIIISII);
@@ -328,13 +358,27 @@ function runAnalysis(params, dialog) {
       
       // Check if ratios are in normalized range
       if (siiHaStats.maximum <= 1.1 && oiiiHaStats.maximum <= 1.1 && oiiiSiiStats.maximum <= 1.1) {
-         console.writeln("\n⚠️  检测到比值图在 [0,1] 范围内（可能已归一化）");
-         console.writeln("   当前阈值设置:");
+         console.writeln("\n⚠️  严重警告: 比值图被截断到 [0,1] 范围！");
+         console.writeln("   这会导致比值失真，无法进行准确的科学分析。");
+         console.writeln("   原因: 输入图像已归一化，或 PixelMath 自动截断结果。");
+         console.writeln("\n   当前阈值设置:");
          console.writeln("     - SII/Hα 阈值: " + params.shockThreshold);
          console.writeln("     - OIII/Hα 阈值: " + params.highIonThreshold);
-         console.writeln("\n   对于归一化数据，建议阈值:");
-         console.writeln("     - SII/Hα: 0.4-0.5 (激波)");
-         console.writeln("     - OIII/Hα: 0.7-0.9 (高电离)");
+         console.writeln("\n   比值统计显示:");
+         if (oiiiHaStats.median >= 0.99) {
+            console.writeln("     ⚠️  OIII/Hα 中位数 = " + oiiiHaStats.median.toFixed(4) + " (接近 1.0)");
+            console.writeln("        说明大量像素的真实比值 > 1.0，但被截断到 1.0");
+         }
+         if (siiHaStats.median >= 0.95) {
+            console.writeln("     ⚠️  SII/Hα 中位数 = " + siiHaStats.median.toFixed(4) + " (接近 1.0)");
+            console.writeln("        说明大量像素的真实比值 > 1.0，但被截断到 1.0");
+         }
+         console.writeln("\n   ⚠️  强烈建议:");
+         console.writeln("     1. 使用未归一化的原始线性数据（未拉伸、未归一化）");
+         console.writeln("     2. 如果必须使用归一化数据，比值分析结果不可靠");
+         console.writeln("     3. 对于归一化数据，建议阈值:");
+         console.writeln("        - SII/Hα: 0.4-0.5 (激波)");
+         console.writeln("        - OIII/Hα: 0.7-0.9 (高电离)");
       } else {
          console.writeln("\n提示: 典型 HII 区域比值（未归一化）:");
          console.writeln("  - SII/Hα: 0.2-0.4 (光致电离), 0.5-1.5+ (激波)");

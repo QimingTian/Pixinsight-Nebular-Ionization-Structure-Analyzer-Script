@@ -22,15 +22,37 @@ var NISAIO = (function () {
 
    function saveImage(image, outputPath) {
       var channels = image.numberOfChannels || image.channelCount || 1;
+      // normalized=false: Keep original pixel values, don't normalize when saving
+      // bitsPerSample=32, isFloatSample=true: Use Float32 to support values > 1.0
       var win = new ImageWindow(image.width, image.height, channels,
          32, true, channels > 1, "nisa_tmp");
       win.mainView.beginProcess(UndoFlag_NoSwapFile);
       win.mainView.image.assign(image);
       win.mainView.endProcess();
+      
+      // Check image statistics before saving for debugging
+      var statsBefore = new ImageStatistics(win.mainView.image);
+      console.writeln("[DEBUG] saveImage: 保存前统计, min=" + statsBefore.minimum.toFixed(4) + ", max=" + statsBefore.maximum.toFixed(4));
+      
+      // saveAs parameters: (filePath, queryFileFormat, queryFileOptions, preserveImageProperties)
+      // queryFileFormat=false: use file extension to determine format
+      // queryFileOptions=false: use default options
+      // preserveImageProperties=true: preserve metadata
       var ok = win.saveAs(outputPath, false, false, true);
       win.forceClose();
       if (!ok)
          throw new Error("保存文件失败: " + outputPath);
+      
+      // Reload and check if values were preserved
+      var reloadWin = ImageWindow.open(outputPath);
+      if (reloadWin.length > 0) {
+         var statsAfter = new ImageStatistics(reloadWin[0].mainView.image);
+         console.writeln("[DEBUG] saveImage: 保存后统计（重新加载）, min=" + statsAfter.minimum.toFixed(4) + ", max=" + statsAfter.maximum.toFixed(4));
+         if (Math.abs(statsAfter.maximum - statsBefore.maximum) > 0.01) {
+            console.writeln("[DEBUG] ⚠️  警告: 保存后最大值发生变化！可能被截断或转换。");
+         }
+         reloadWin[0].forceClose();
+      }
    }
 
    function writeCSV(outputPath, headers, rows) {
