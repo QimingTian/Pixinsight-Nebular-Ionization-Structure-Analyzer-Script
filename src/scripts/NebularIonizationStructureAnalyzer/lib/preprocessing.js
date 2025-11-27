@@ -81,9 +81,15 @@ var NISAPreprocessing = (function () {
          tempWin.forceClose();
       }
       
-      console.writeln("[DEBUG] Cloning mask image...");
-      var result = maskWin.mainView.image.clone();
+      console.writeln("[DEBUG] Creating result image...");
+      // Create a new ImageWindow to hold the result
+      var resultWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask_result");
+      resultWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      resultWin.mainView.image.assign(maskWin.mainView.image);
+      resultWin.mainView.endProcess();
+      var result = resultWin.mainView.image;
       maskWin.forceClose();
+      resultWin.forceClose();
       console.writeln("[DEBUG] buildNoiseMask: complete");
       return result;
    }
