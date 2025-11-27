@@ -262,18 +262,27 @@ function runAnalysis(params, dialog) {
          mask: noiseMask,
          progressCallback: function(msg) { dialog.setProgress(msg); }
       });
+      if (ratioSIIHa._window) {
+         tempWindows.push(ratioSIIHa._window);
+      }
       dialog.setProgress("比值图 OIII/Hα...");
       var ratioOIIIHa = NISARatios.computeRatio(oiiiWin.mainView, haWin.mainView, {
          epsilon: NISAConfig.epsilon,
          mask: noiseMask,
          progressCallback: function(msg) { dialog.setProgress(msg); }
       });
+      if (ratioOIIIHa._window) {
+         tempWindows.push(ratioOIIIHa._window);
+      }
       dialog.setProgress("比值图 OIII/SII...");
       var ratioOIIISII = NISARatios.computeRatio(oiiiWin.mainView, siiWin.mainView, {
          epsilon: NISAConfig.epsilon,
          mask: noiseMask,
          progressCallback: function(msg) { dialog.setProgress(msg); }
       });
+      if (ratioOIIISII._window) {
+         tempWindows.push(ratioOIIISII._window);
+      }
 
       dialog.setProgress("保存比值 FITS...");
       NISAIO.saveImage(ratioSIIHa, params.outputDir + "/ratio_SII_Ha.fits");

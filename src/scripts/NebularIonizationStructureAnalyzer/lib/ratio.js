@@ -10,39 +10,37 @@ var NISARatios = (function () {
       var progressCallback = options && options.progressCallback;
       var width = numeratorView.image.width;
       var height = numeratorView.image.height;
-      // Create ratio image using ImageWindow
-      var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
-      // First process: initialize to zero
-      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      ratioWin.mainView.image.fill(0);
-      ratioWin.mainView.endProcess();
-      // Second process: set sample values (NO UndoFlag_NoSwapFile like AutoDBE.js)
-      ratioWin.mainView.beginProcess(); // No UndoFlag_NoSwapFile here!
-      var totalPixels = width * height;
-      var processedPixels = 0;
-      var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
-      for (var y = 0; y < height; y++) {
-         for (var x = 0; x < width; x++) {
-            if (mask && mask.sample(x, y) <= 0) {
-               ratioWin.mainView.image.setSample(0, x, y);
-               processedPixels++;
-            } else {
-               var num = numeratorView.image.sample(x, y);
-               var den = denominatorView.image.sample(x, y);
-               ratioWin.mainView.image.setSample(num / (den + eps), x, y);
-               processedPixels++;
-            }
-            if (processedPixels % updateInterval === 0) {
-               if (progressCallback) {
-                  progressCallback("计算比值: " + Math.floor(processedPixels * 100 / totalPixels) + "%");
-               }
-               processEvents(); // Update UI
-            }
-         }
+      
+      if (progressCallback) {
+         progressCallback("计算比值: 使用 PixelMath...");
       }
+      
+      // Create result window with numerator image
+      var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
+      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      ratioWin.mainView.image.assign(numeratorView.image);
       ratioWin.mainView.endProcess();
-      var result = ratioWin.mainView.image.clone();
-      ratioWin.forceClose();
+      
+      // Use PixelMath to compute ratio: $T / (denominator + eps)
+      // Reference denominator image directly by ID
+      var pixelMath = new PixelMath;
+      pixelMath.expression = "$T / (" + denominatorView.id + " + " + eps + ")";
+      pixelMath.useSingleExpression = true;
+      pixelMath.executeOn(ratioWin.mainView);
+      
+      // Apply mask if provided
+      if (mask && mask._window) {
+         // Apply mask using PixelMath: if mask > 0 then ratio else 0
+         var maskMath = new PixelMath;
+         maskMath.expression = "iif(" + mask._window.mainView.id + " > 0, $T, 0)";
+         maskMath.useSingleExpression = true;
+         maskMath.executeOn(ratioWin.mainView);
+      }
+      
+      ratioWin.hide();
+      var result = ratioWin.mainView.image;
+      result._window = ratioWin;
+      
       return result;
    }
 
