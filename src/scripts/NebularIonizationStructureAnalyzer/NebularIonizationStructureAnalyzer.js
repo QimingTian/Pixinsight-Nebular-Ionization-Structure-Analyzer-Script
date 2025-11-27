@@ -197,8 +197,7 @@ function buildOverlayImage(ratioImage, segmentationImage) {
    var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
    overlayWin.mainView.image.fill(0); // Initialize to zero
-   overlayWin.mainView.endProcess();
-   overlayWin.mainView.beginProcess(); // Start another process to modify
+   // Now set sample values in the same process block
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
         var label = segmentationImage.sample(x, y);

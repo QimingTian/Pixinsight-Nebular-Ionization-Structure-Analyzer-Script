@@ -32,8 +32,7 @@ var NISAPreprocessing = (function () {
       var maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
       maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       maskWin.mainView.image.fill(0); // Initialize to zero
-      maskWin.mainView.endProcess();
-      maskWin.mainView.beginProcess(); // Start another process to modify
+      // Now set sample values in the same process block
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             var value = view.image.sample(x, y);

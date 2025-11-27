@@ -22,8 +22,7 @@ var NISASegmentation = (function () {
       var segWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_seg");
       segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       segWin.mainView.image.fill(0); // Initialize to zero
-      segWin.mainView.endProcess();
-      segWin.mainView.beginProcess(); // Start another process to modify
+      // Now set sample values in the same process block
 
       var counts = {
          shock: 0,

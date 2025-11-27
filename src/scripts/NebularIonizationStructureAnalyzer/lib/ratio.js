@@ -13,8 +13,7 @@ var NISARatios = (function () {
       var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
       ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       ratioWin.mainView.image.fill(0); // Initialize to zero
-      ratioWin.mainView.endProcess();
-      ratioWin.mainView.beginProcess(); // Start another process to modify
+      // Now set sample values in the same process block
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             if (mask && mask.sample(x, y) <= 0) {
