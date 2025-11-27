@@ -20,9 +20,9 @@ var NISASegmentation = (function () {
       var height = ratioSIIHa.height;
       // Create segmentation image using ImageWindow
       var segWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_seg");
-      segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      segWin.mainView.image.fill(0); // Initialize to zero
-      var segmentation = segWin.mainView.image;
+      // Create temporary image from existing image to get proper structure
+      var tempImage = ratioSIIHa.clone();
+      tempImage.fill(0); // Initialize to zero
 
       var counts = {
          shock: 0,
@@ -34,26 +34,29 @@ var NISASegmentation = (function () {
          for (var x = 0; x < width; x++) {
             var valid = mask ? mask.sample(x, y) > 0 : true;
             if (!valid) {
-               segmentation.setSample(0, x, y);
+               tempImage.setSample(0, x, y);
                continue;
             }
 
             var siiha = ratioSIIHa.sample(x, y);
             var oiiha = ratioOIIIHa.sample(x, y);
             if (siiha > shockThreshold) {
-               segmentation.setSample(LABELS.SHOCK, x, y);
+               tempImage.setSample(LABELS.SHOCK, x, y);
                counts.shock++;
             } else if (oiiha > highIonThreshold) {
-               segmentation.setSample(LABELS.HIGH_ION, x, y);
+               tempImage.setSample(LABELS.HIGH_ION, x, y);
                counts.highIon++;
             } else {
-               segmentation.setSample(LABELS.PHOTOION, x, y);
+               tempImage.setSample(LABELS.PHOTOION, x, y);
                counts.photoIon++;
             }
          }
       }
+      // Assign to window
+      segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      segWin.mainView.image.assign(tempImage);
       segWin.mainView.endProcess();
-      var result = segmentation.clone();
+      var result = segWin.mainView.image.clone();
       segWin.forceClose();
 
       return {
