@@ -191,45 +191,48 @@ NISADialog.prototype.setProgress = function (text) {
 };
 
 function buildOverlayImage(ratioImage, segmentationImage, progressCallback) {
+   if (progressCallback) {
+      progressCallback("绘制覆盖图: 使用 PixelMath...");
+   }
+   
    var width = ratioImage.width;
    var height = ratioImage.height;
-   // Create overlay image using ImageWindow
+   
+   // Get image IDs
+   var ratioId = ratioImage._window ? ratioImage._window.mainView.id : "";
+   var segId = segmentationImage._window ? segmentationImage._window.mainView.id : "";
+   
+   // Create overlay image using ImageWindow (3 channels for RGB)
    var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
-   // First process: initialize to zero
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
    overlayWin.mainView.image.fill(0);
    overlayWin.mainView.endProcess();
-   // Second process: set sample values (NO UndoFlag_NoSwapFile like AutoDBE.js)
-   overlayWin.mainView.beginProcess(); // No UndoFlag_NoSwapFile here!
-   var totalPixels = width * height;
-   var processedPixels = 0;
-   var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
-   for (var y = 0; y < height; y++) {
-     for (var x = 0; x < width; x++) {
-        var label = segmentationImage.sample(x, y);
-        var ratioVal = ratioImage.sample(x, y);
-        var r = 0, g = 0, b = 0;
-        if (label === NISASegmentation.LABELS.SHOCK)
-           r = ratioVal;
-        else if (label === NISASegmentation.LABELS.HIGH_ION)
-           g = ratioVal;
-        else if (label === NISASegmentation.LABELS.PHOTOION)
-           b = ratioVal;
-        overlayWin.mainView.image.setSample(r, x, y, 0);
-        overlayWin.mainView.image.setSample(g, x, y, 1);
-        overlayWin.mainView.image.setSample(b, x, y, 2);
-        processedPixels++;
-        if (processedPixels % updateInterval === 0) {
-           if (progressCallback) {
-              progressCallback("绘制覆盖图: " + Math.floor(processedPixels * 100 / totalPixels) + "%");
-           }
-           processEvents(); // Update UI
-        }
-     }
-   }
-   overlayWin.mainView.endProcess();
-   var result = overlayWin.mainView.image.clone();
-   overlayWin.forceClose();
+   
+   // Use PixelMath to create RGB overlay
+   // R channel: if label == SHOCK then ratio else 0
+   // G channel: if label == HIGH_ION then ratio else 0
+   // B channel: if label == PHOTOION then ratio else 0
+   var pixelMath = new PixelMath;
+   pixelMath.expression = "iif(" + segId + " == " + NISASegmentation.LABELS.SHOCK + ", " + ratioId + ", 0)";
+   pixelMath.useSingleExpression = true;
+   pixelMath.executeOn(overlayWin.mainView);
+   
+   // Apply to G channel
+   var pixelMathG = new PixelMath;
+   pixelMathG.expression = "iif(" + segId + " == " + NISASegmentation.LABELS.HIGH_ION + ", " + ratioId + ", 0)";
+   pixelMathG.useSingleExpression = true;
+   pixelMathG.executeOn(overlayWin.mainView);
+   
+   // Apply to B channel
+   var pixelMathB = new PixelMath;
+   pixelMathB.expression = "iif(" + segId + " == " + NISASegmentation.LABELS.PHOTOION + ", " + ratioId + ", 0)";
+   pixelMathB.useSingleExpression = true;
+   pixelMathB.executeOn(overlayWin.mainView);
+   
+   overlayWin.hide();
+   var result = overlayWin.mainView.image;
+   result._window = overlayWin;
+   
    return result;
 }
 
@@ -305,6 +308,9 @@ function runAnalysis(params, dialog) {
 
       dialog.setProgress("多尺度分析...");
       var fronts = NISAMultiscale.detectFronts(ratioOIIIHa, { layers: 4, threshold: 0.02 });
+      if (fronts._window) {
+         tempWindows.push(fronts._window);
+      }
       NISAIO.saveImage(fronts, params.outputDir + "/ionization_fronts.fits");
 
       dialog.setProgress("生成 CSV 报告...");
@@ -323,6 +329,9 @@ function runAnalysis(params, dialog) {
       var overlay = buildOverlayImage(ratioOIIIHa, segmentationResult.image, function(msg) {
          dialog.setProgress(msg);
       });
+      if (overlay._window) {
+         tempWindows.push(overlay._window);
+      }
       NISAIO.saveImage(overlay, params.outputDir + "/overlay.png");
 
       dialog.setProgress("完成");

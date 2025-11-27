@@ -5,32 +5,40 @@
 var NISAMultiscale = (function () {
 
    function detectFronts(ratioImage, options) {
-      var layers = options.layers || 4;
+      var numLayers = options.layers || 4;
       var threshold = options.threshold || 0.01;
-      var tmpWin = new ImageWindow(ratioImage.width, ratioImage.height, 1, 32, true, false, "nisa_ratio");
+      
+      // Create temporary window with ratio image
+      var tmpWin = new ImageWindow(ratioImage.width, ratioImage.height, 1, 32, true, false, "nisa_fronts");
       tmpWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       tmpWin.mainView.image.assign(ratioImage);
       tmpWin.mainView.endProcess();
 
+      // Configure MultiscaleLinearTransform layers
       var mlt = new MultiscaleLinearTransform;
+      var layers = new Array(numLayers);
+      for (var n = 0; n < numLayers - 1; n++) {
+         layers[n] = [false, true, 0.000, false, 3.000, 1.00, 1];
+      }
+      layers[numLayers - 1] = [true, true, 0.000, false, 3.000, 1.00, 1]; // Last layer enabled
       mlt.layers = layers;
+      
+      mlt.transform = MultiscaleLinearTransform.prototype.StarletTransform;
       mlt.scalingFunctionData = MultiscaleLinearTransform.prototype.Starlet5;
       mlt.linearMask = false;
       mlt.executeOn(tmpWin.mainView);
 
-      var gradient = tmpWin.mainView.image.clone();
-      tmpWin.forceClose();
+      // Apply threshold using PixelMath
+      var pixelMath = new PixelMath;
+      pixelMath.expression = "iif(abs($T) > " + threshold + ", abs($T), 0)";
+      pixelMath.useSingleExpression = true;
+      pixelMath.executeOn(tmpWin.mainView);
 
-      var width = gradient.width;
-      var height = gradient.height;
-      for (var y = 0; y < height; y++) {
-         for (var x = 0; x < width; x++) {
-            var value = Math.abs(gradient.sample(x, y));
-            gradient.setSample(value > threshold ? value : 0, x, y);
-         }
-      }
+      tmpWin.hide();
+      var result = tmpWin.mainView.image;
+      result._window = tmpWin;
 
-      return gradient;
+      return result;
    }
 
    return {
