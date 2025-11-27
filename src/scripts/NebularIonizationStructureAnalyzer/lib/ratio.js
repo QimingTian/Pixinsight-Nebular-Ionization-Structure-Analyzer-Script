@@ -32,9 +32,16 @@ var NISARatios = (function () {
       var height = image.height;
 
       if (mode === "minmax") {
-         var stats = new ImageStatistics(image);
-         var min = stats.minimum[0];
-         var max = stats.maximum[0];
+         // Calculate min and max manually
+         var min = Number.MAX_VALUE;
+         var max = -Number.MAX_VALUE;
+         for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+               var v = image.sample(x, y);
+               if (v < min) min = v;
+               if (v > max) max = v;
+            }
+         }
          for (var y = 0; y < height; y++) {
             for (var x = 0; x < width; x++) {
                var v = image.sample(x, y);

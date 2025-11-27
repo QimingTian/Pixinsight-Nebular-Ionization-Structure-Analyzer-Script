@@ -6,8 +6,22 @@
 var NISAPreprocessing = (function () {
 
    function estimateNoiseSigma(view) {
-      var stats = new ImageStatistics(view.image);
-      return stats.sigma[0];
+      // Use MAD (Median Absolute Deviation) as robust noise estimator
+      var median = view.image.median();
+      var width = view.image.width;
+      var height = view.image.height;
+      var deviations = [];
+      for (var y = 0; y < height; y += 10) { // Sample every 10th pixel for speed
+         for (var x = 0; x < width; x += 10) {
+            var value = view.image.sample(x, y);
+            deviations.push(Math.abs(value - median));
+         }
+      }
+      // Sort and get median of deviations
+      deviations.sort(function(a, b) { return a - b; });
+      var mad = deviations[Math.floor(deviations.length / 2)];
+      // Convert MAD to sigma approximation: sigma ≈ 1.4826 * MAD
+      return 1.4826 * mad;
    }
 
    function buildNoiseMask(view, sigma, k) {
