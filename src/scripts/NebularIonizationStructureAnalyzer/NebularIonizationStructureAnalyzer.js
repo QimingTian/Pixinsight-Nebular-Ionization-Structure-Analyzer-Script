@@ -195,9 +195,12 @@ function buildOverlayImage(ratioImage, segmentationImage, progressCallback) {
    var height = ratioImage.height;
    // Create overlay image using ImageWindow
    var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
+   // First process: initialize to zero
    overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-   overlayWin.mainView.image.fill(0); // Initialize to zero
-   // Now set sample values in the same process block
+   overlayWin.mainView.image.fill(0);
+   overlayWin.mainView.endProcess();
+   // Second process: set sample values
+   overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
    var totalPixels = width * height;
    var processedPixels = 0;
    var updateInterval = Math.floor(totalPixels / 20); // Update every 5%

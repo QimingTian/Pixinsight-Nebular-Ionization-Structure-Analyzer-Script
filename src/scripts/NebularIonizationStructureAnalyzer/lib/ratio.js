@@ -12,9 +12,12 @@ var NISARatios = (function () {
       var height = numeratorView.image.height;
       // Create ratio image using ImageWindow
       var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
+      // First process: initialize to zero
       ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      ratioWin.mainView.image.fill(0); // Initialize to zero
-      // Now set sample values in the same process block
+      ratioWin.mainView.image.fill(0);
+      ratioWin.mainView.endProcess();
+      // Second process: set sample values
+      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       var totalPixels = width * height;
       var processedPixels = 0;
       var updateInterval = Math.floor(totalPixels / 20); // Update every 5%

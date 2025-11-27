@@ -21,9 +21,12 @@ var NISASegmentation = (function () {
       var height = ratioSIIHa.height;
       // Create segmentation image using ImageWindow
       var segWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_seg");
+      // First process: initialize to zero
       segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      segWin.mainView.image.fill(0); // Initialize to zero
-      // Now set sample values in the same process block
+      segWin.mainView.image.fill(0);
+      segWin.mainView.endProcess();
+      // Second process: set sample values
+      segWin.mainView.beginProcess(UndoFlag_NoSwapFile);
 
       var counts = {
          shock: 0,

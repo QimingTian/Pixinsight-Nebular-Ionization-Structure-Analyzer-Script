@@ -30,9 +30,12 @@ var NISAPreprocessing = (function () {
       var height = view.image.height;
       // Create mask using ImageWindow
       var maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
+      // First process: initialize to zero
       maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      maskWin.mainView.image.fill(0); // Initialize to zero
-      // Now set sample values in the same process block
+      maskWin.mainView.image.fill(0);
+      maskWin.mainView.endProcess();
+      // Second process: set sample values
+      maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
       var totalPixels = width * height;
       var processedPixels = 0;
       var updateInterval = Math.floor(totalPixels / 20); // Update every 5%
