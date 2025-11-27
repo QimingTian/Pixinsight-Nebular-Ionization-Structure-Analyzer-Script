@@ -334,7 +334,18 @@ function runAnalysis(params, dialog) {
       }
       NISAIO.saveImage(overlay, params.outputDir + "/overlay.png");
 
-      dialog.setProgress("完成");
+      dialog.setProgress("完成！所有文件已保存到: " + params.outputDir);
+      console.writeln("\n=== NISA 分析完成 ===");
+      console.writeln("输出目录: " + params.outputDir);
+      console.writeln("生成的文件:");
+      console.writeln("  - ratio_SII_Ha.fits");
+      console.writeln("  - ratio_OIII_Ha.fits");
+      console.writeln("  - ratio_OIII_SII.fits");
+      console.writeln("  - segmentation.fits");
+      console.writeln("  - ionization_fronts.fits");
+      console.writeln("  - analysis_report.csv");
+      console.writeln("  - overlay.png");
+      console.writeln("===================\n");
    } finally {
       // Close all temporary windows
       for (var i = 0; i < tempWindows.length; i++) {
