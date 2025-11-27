@@ -53,30 +53,30 @@ var NISAPreprocessing = (function () {
       rangeSel.invert = false;
       rangeSel.createNewImage = true;
       rangeSel.showNewImage = false;
+      
+      // Store current active window before RangeSelection
+      var oldActiveWindow = ImageWindow.activeWindow;
       rangeSel.executeOn(tempWin.mainView);
       
-      // Find the newly created mask window
-      var maskWindows = ImageWindow.windows;
-      var maskWin = null;
-      for (var i = 0; i < maskWindows.length; i++) {
-         if (maskWindows[i].mainView.id !== tempWin.mainView.id && 
-             maskWindows[i].mainView.id.indexOf("RangeSelection") >= 0) {
-            maskWin = maskWindows[i];
-            break;
-         }
-      }
+      // RangeSelection creates a new window which becomes active
+      var maskWin = ImageWindow.activeWindow;
       
-      if (!maskWin) {
-         // Fallback: create mask manually using a different approach
-         console.writeln("[DEBUG] RangeSelection failed, using manual method...");
+      // Check if we got a new window (not the temp window)
+      if (!maskWin || maskWin.mainView.id === tempWin.mainView.id) {
+         // Fallback: use PixelMath to create binary mask
+         console.writeln("[DEBUG] RangeSelection failed, using PixelMath...");
          tempWin.forceClose();
          maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
          maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
          maskWin.mainView.image.assign(view.image);
-         // Subtract threshold and clamp to create binary mask
-         maskWin.mainView.image.sub(threshold);
-         maskWin.mainView.image.truncate(0, 1);
          maskWin.mainView.endProcess();
+         
+         // Use PixelMath to create binary mask: if value > threshold then 1 else 0
+         var pixelMath = new PixelMath;
+         pixelMath.expression = "iif($T > " + threshold + ", 1, 0)";
+         pixelMath.useSingleExpression = true;
+         pixelMath.symbols = "";
+         pixelMath.executeOn(maskWin.mainView);
       } else {
          tempWin.forceClose();
       }
