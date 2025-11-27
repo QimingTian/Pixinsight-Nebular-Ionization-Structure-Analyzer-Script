@@ -30,18 +30,16 @@ var NISAPreprocessing = (function () {
       var height = view.image.height;
       // Create mask using ImageWindow
       var maskWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_mask");
-      // Create temporary image from existing image to get proper structure
-      var tempImage = view.image.clone();
-      // Fill with mask values
+      maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      maskWin.mainView.image.fill(0); // Initialize to zero
+      maskWin.mainView.endProcess();
+      maskWin.mainView.beginProcess(); // Start another process to modify
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             var value = view.image.sample(x, y);
-            tempImage.setSample(value > threshold ? 1 : 0, x, y);
+            maskWin.mainView.image.setSample(value > threshold ? 1 : 0, x, y);
          }
       }
-      // Assign to window
-      maskWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      maskWin.mainView.image.assign(tempImage);
       maskWin.mainView.endProcess();
       var result = maskWin.mainView.image.clone();
       maskWin.forceClose();

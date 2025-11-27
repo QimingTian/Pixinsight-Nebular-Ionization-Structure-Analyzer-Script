@@ -195,10 +195,10 @@ function buildOverlayImage(ratioImage, segmentationImage) {
    var height = ratioImage.height;
    // Create overlay image using ImageWindow
    var overlayWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_overlay");
-   // Create temporary 3-channel image using ImageWindow
-   var tempWin = new ImageWindow(width, height, 3, 32, true, true, "nisa_temp");
-   tempWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-   tempWin.mainView.image.fill(0); // Initialize to zero
+   overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+   overlayWin.mainView.image.fill(0); // Initialize to zero
+   overlayWin.mainView.endProcess();
+   overlayWin.mainView.beginProcess(); // Start another process to modify
    for (var y = 0; y < height; y++) {
      for (var x = 0; x < width; x++) {
         var label = segmentationImage.sample(x, y);
@@ -210,18 +210,13 @@ function buildOverlayImage(ratioImage, segmentationImage) {
            g = ratioVal;
         else if (label === NISASegmentation.LABELS.PHOTOION)
            b = ratioVal;
-        tempWin.mainView.image.setSample(r, x, y, 0);
-        tempWin.mainView.image.setSample(g, x, y, 1);
-        tempWin.mainView.image.setSample(b, x, y, 2);
+        overlayWin.mainView.image.setSample(r, x, y, 0);
+        overlayWin.mainView.image.setSample(g, x, y, 1);
+        overlayWin.mainView.image.setSample(b, x, y, 2);
      }
    }
-   tempWin.mainView.endProcess();
-   // Assign to final window
-   overlayWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-   overlayWin.mainView.image.assign(tempWin.mainView.image);
    overlayWin.mainView.endProcess();
    var result = overlayWin.mainView.image.clone();
-   tempWin.forceClose();
    overlayWin.forceClose();
    return result;
 }

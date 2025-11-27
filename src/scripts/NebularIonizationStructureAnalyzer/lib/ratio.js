@@ -11,23 +11,21 @@ var NISARatios = (function () {
       var height = numeratorView.image.height;
       // Create ratio image using ImageWindow
       var ratioWin = new ImageWindow(width, height, 1, 32, true, false, "nisa_ratio");
-      // Create temporary image from existing image to get proper structure
-      var tempImage = numeratorView.image.clone();
-      // Fill with ratio values
+      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
+      ratioWin.mainView.image.fill(0); // Initialize to zero
+      ratioWin.mainView.endProcess();
+      ratioWin.mainView.beginProcess(); // Start another process to modify
       for (var y = 0; y < height; y++) {
          for (var x = 0; x < width; x++) {
             if (mask && mask.sample(x, y) <= 0) {
-               tempImage.setSample(0, x, y);
+               ratioWin.mainView.image.setSample(0, x, y);
                continue;
             }
             var num = numeratorView.image.sample(x, y);
             var den = denominatorView.image.sample(x, y);
-            tempImage.setSample(num / (den + eps), x, y);
+            ratioWin.mainView.image.setSample(num / (den + eps), x, y);
          }
       }
-      // Assign to window
-      ratioWin.mainView.beginProcess(UndoFlag_NoSwapFile);
-      ratioWin.mainView.image.assign(tempImage);
       ratioWin.mainView.endProcess();
       var result = ratioWin.mainView.image.clone();
       ratioWin.forceClose();
